@@ -210,6 +210,9 @@ person. Plainly, so you can decide for yourself:
 - **No warranty.** The MIT licence says so: it comes as is. If something breaks on
   your machine, that's on you. The manual has a list of common failures and how to
   get out of them.
+- **The Kemper's USB passthrough is tested on the author's machine**, not on someone
+  else's virgin PC. It is the only thing nobody has been able to verify on a
+  different machine: if you try it on yours, tell me how it went.
 - **If you find something that doesn't match this documentation, open an issue.**
   A correction from someone who tested it on their own machine is worth more than
   any promise written here.

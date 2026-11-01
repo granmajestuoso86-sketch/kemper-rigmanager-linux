@@ -212,6 +212,9 @@ corregida por una persona. Dicho en claro, para que cada cual decida:
 - **Sin garantía.** La licencia MIT lo dice: se ofrece tal cual. Si algo se rompe
   en tu equipo, la responsabilidad es tuya. El manual incluye una lista de errores
   típicos y cómo salir de ellos.
+- **El paso del Kemper por USB está probado en el equipo de origen**, no en un PC
+  virgen ajeno. Es lo único que nadie ha podido verificar en un equipo distinto: si
+  lo pruebas en el tuyo, cuéntame cómo ha ido.
 - **Si encuentras algo que no cuadra con esta documentación, abre una incidencia.**
   La corrección de alguien que lo ha probado en su equipo vale más que cualquier
   promesa escrita aquí.
