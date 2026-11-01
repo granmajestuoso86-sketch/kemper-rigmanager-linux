@@ -84,7 +84,7 @@ are set for English.
 ## Installation (one time only)
 
 ```bash
-git clone <this-repository-address> kemper-rigmanager-linux
+git clone https://github.com/granmajestuoso86-sketch/kemper-rigmanager-linux.git
 cd kemper-rigmanager-linux
 ./install.sh
 ```

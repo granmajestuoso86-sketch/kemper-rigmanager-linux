@@ -83,7 +83,7 @@ están puestos en inglés.
 ## Instalación (una sola vez)
 
 ```bash
-git clone <la-dirección-de-este-repositorio> kemper-rigmanager-linux
+git clone https://github.com/granmajestuoso86-sketch/kemper-rigmanager-linux.git
 cd kemper-rigmanager-linux
 ./install.sh
 ```
