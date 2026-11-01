@@ -226,4 +226,4 @@ person. Plainly, so you can decide for yourself:
 
 ## License
 
-MIT (see `LICENSE`), with the trademark and media notice included there.
+MIT (see `LICENSE`). The trademark, media and AI-assisted notices are in `NOTICE`.

@@ -19,30 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
--------------------------------------------------------------------------------
-AVISO IMPORTANTE / DISCLAIMER
-
-Este proyecto NO está afiliado ni a Kemper GmbH ni a Microsoft. "Kemper",
-"Profiler" y "Rig Manager" son marcas de Kemper GmbH; "Windows" lo es de
-Microsoft Corporation. Aquí sólo hay scripts que automatizan una instalación
-en TU propio equipo, con TUS propias licencias y medios.
-
-Este repositorio NO incluye ni distribuye la ISO de Windows ni el instalador
-de Rig Manager: son propiedad de sus fabricantes y cada usuario debe aportar
-los suyos, obtenidos por los cauces que le correspondan.
-
--------------------------------------------------------------------------------
-GENERADO CON AYUDA DE INTELIGENCIA ARTIFICIAL / AI-ASSISTED
-
-Este proyecto se ha escrito con ayuda de inteligencia artificial, dirigido y
-corregido por una persona, y se ha probado en sistemas reales (ver el README).
-Aun asi, se ofrece SIN GARANTIA de ningun tipo, tal como dice la licencia MIT de
-arriba: usalo bajo tu responsabilidad y revisa lo que vayas a ejecutar con
-permisos de administrador.
-
-This project was written with the help of artificial intelligence, steered and
-corrected by a human, and tested on real systems (see the README). Even so, it
-comes with NO WARRANTY of any kind, as the MIT licence above states: use it at
-your own risk and review anything you are about to run with administrator
-permissions.

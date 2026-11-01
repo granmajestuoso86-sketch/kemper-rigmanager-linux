@@ -228,4 +228,4 @@ corregida por una persona. Dicho en claro, para que cada cual decida:
 
 ## Licencia
 
-MIT (ver `LICENSE`), con el aviso de marcas y de medios incluido ahí.
+MIT (ver `LICENSE`). El aviso de marcas, el de medios y el de generación con IA están en `NOTICE`.
