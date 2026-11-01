@@ -1,0 +1,263 @@
+#!/usr/bin/env bash
+# =============================================================================
+#  kemper-rig-manager — LANZADOR de escritorio
+#
+#  Doble clic en el menú y hace todo esto:
+#     1. Arranca la VM "kemper-win11" si estaba apagada (espera a que Windows
+#        esté listo, vía agente de invitado).
+#     2. Conecta el Kemper Profiler a la VM (si está enchufado).
+#     3. Abre la ventana de la máquina virtual: verás Rig Manager dentro.
+#    4. Al cerrar la ventana, Apaga Windows automáticamente. Al apagarse, el
+#       Kemper VUELVE SOLO a Linux y tu editor nativo puede usarlo otra vez.
+#       (No se pregunta nada: cerrar la ventana es "he terminado". Para dejarlo
+#       encendido a propósito está --dejar-abierto.)
+#
+#  Uso desde terminal:
+#     kemper-rig-manager              → abre y conecta (uso normal)
+#     kemper-rig-manager --estado     → qué está pasando ahora mismo
+#     kemper-rig-manager --apagar     → apaga Windows y libera el Kemper
+#     kemper-rig-manager --dejar-abierto
+#                                     → abre la ventana y, al cerrarla, deja
+#                                       Windows encendido (caso raro: dejar una
+#                                       actualización larga corriendo). Por
+#                                       defecto, cerrar la ventana apaga Windows.
+#     kemper-rig-manager --ayuda
+# =============================================================================
+set -uo pipefail
+# virsh traduce sus mensajes al idioma del sistema: forzar inglés para poder
+# comparar sus salidas (domstate devolvía "ejecutando" en vez de "running").
+export LC_ALL=C
+
+# OJO (fallo real): ${BASH_SOURCE[0]} es la ruta con la que SE LLAMA al script.
+# Como el menu lo llama a traves del enlace ~/.local/bin/kemper-rig-manager,
+# aquello valia "~/.local/bin" y ".." daba "~/.local": el lanzador buscaba
+# config/hostdev-kemper.xml en ~/.local/config, no lo encontraba y NO conectaba
+# el Kemper (mientras Windows si arrancaba). Se resuelve el enlace primero.
+SCRIPT="$(readlink -f "${BASH_SOURCE[0]}")"
+PROYECTO="$(cd "$(dirname "$SCRIPT")/.." && pwd)"
+# --- Configuración de ESTA máquina ------------------------------------------
+# Nombre de la VM, RAM, disco y rutas de los medios viven en
+# config/kemper-vm.conf; este script no lleva ninguna ruta dentro.
+source "$PROYECTO/lib/config.sh"
+cfg_cargar
+
+# Textos en varios idiomas (español e inglés), como en el resto del proyecto.
+# OJO: arriba se ha forzado LC_ALL=C (para leer virsh en inglés) y eso taparía
+# el idioma del sistema; se llama a i18n_cargar sin ese LC_ALL para que el idioma
+# pueda decidirse por $LANG. KEMPER_LANG y config/kemper-vm.conf mandan igual.
+source "$PROYECTO/lib/i18n.sh"
+LC_ALL= i18n_cargar
+
+DOM="$VM_NOMBRE"
+URI="qemu:///system"
+VID="133e"; PID="0003"
+HW="$PROYECTO/config/hostdev-kemper.xml"
+LOG="$PROYECTO/logs/lanzador.log"
+mkdir -p "$PROYECTO/logs"
+log() { echo "[$(date '+%F %T')] $*" >> "$LOG"; }
+
+# --- diálogos (si no hay zenity, se usa el comportamiento documentado) -------
+tiene_zenity() { command -v zenity >/dev/null 2>&1; }
+info()  { log "INFO: $1"; if tiene_zenity; then zenity --info --title="Rig Manager (Kemper)" --width=430 --text="$1"; else echo "$1"; fi; }
+error() { log "ERROR: $1"; if tiene_zenity; then zenity --error --title="Rig Manager (Kemper)" --width=430 --text="$1"; else echo "ERROR: $1" >&2; fi; }
+
+# --- virt-viewer: quitarle su confirmacion al cerrar --------------------------
+# virt-viewer pregunta "Do you want to close the session?" cada vez que se cierra
+# la ventana (clave ask-quit de ~/.config/virt-viewer/settings, que no se puede
+# cambiar por linea de comandos). Ese dialogo tapa el nuestro ("Apago Windows?")
+# y hace pensar que el lanzador no pregunta. Se desactiva, y se hace de forma
+# idempotente en cada arranque porque virt-viewer puede reescribir el fichero.
+asegurar_virt_viewer_sin_pregunta() {
+  local f="$HOME/.config/virt-viewer/settings"
+  mkdir -p "$(dirname "$f")" || return 0
+  [[ -f "$f" ]] || printf '[virt-viewer]\nshare-clipboard=true\nask-quit=false\n' > "$f"
+  grep -q '^\[virt-viewer\]' "$f" || sed -i '1i [virt-viewer]' "$f"
+  if grep -q '^ask-quit=' "$f"; then
+    sed -i 's/^ask-quit=.*/ask-quit=false/' "$f"
+  else
+    sed -i '/^\[virt-viewer\]/a ask-quit=false' "$f"
+  fi
+}
+
+# --- utilidades --------------------------------------------------------------
+vm_estado()       { virsh -c "$URI" domstate "$DOM" 2>/dev/null || echo "no-definida"; }
+# ¿Quién tiene el Kemper? El aparato es COMPUESTO (4 interfaces: dos
+# especificas del fabricante clase ff, y dos de audio clase 01).
+# Lo que decide de verdad:
+#   - si alguna interfaz tiene enlazado un controlador REAL (snd-usb-audio), el
+#     Kemper está EN LINUX y tu editor nativo lo ve;
+#   - si lo único enlazado es "usbfs", lo tiene un programa de usuario: QEMU. Eso
+#     es lo que pasa cuando la máquina virtual lo ha tomado. (usbfs NO es un
+#     controlador de hardware, es el mecanismo de acceso desde espacio de usuario.)
+# Ni lsusb ni "existe la carpeta" valen como criterio: el aparato sigue en sysfs
+# aunque lo tenga la VM. Esa confusión hizo que el lanzador dijera "Kemper en
+# Linux: sí" mientras Windows lo estaba usando.
+kemper_en_host() {
+  local d i drv
+  for d in /sys/bus/usb/devices/*; do
+    [[ -r "$d/idVendor" ]] || continue
+    if [[ "$(cat "$d/idVendor" 2>/dev/null)" == "$VID" && "$(cat "$d/idProduct" 2>/dev/null)" == "$PID" ]]; then
+      for i in "$d":*; do
+        [[ -e "$i/driver" ]] || continue
+        drv="$(basename "$(readlink -f "$i/driver" 2>/dev/null)")"
+        if [[ -n "$drv" && "$drv" != "usbfs" ]]; then echo "sí"; return; fi
+      done
+      echo "no"
+      return
+    fi
+  done
+  echo "no"
+}
+kemper_en_vm()    { virsh -c "$URI" dumpxml "$DOM" 2>/dev/null | grep -q "0x${VID}" && echo "sí" || echo "no"; }
+agente_responde() { virsh -c "$URI" qemu-agent-command "$DOM" '{"execute":"guest-ping"}' >/dev/null 2>&1; }
+
+comprobar_libvirt() {
+  if ! virsh -c "$URI" list --all >/dev/null 2>&1; then
+    error "$(msg ERROR_LIBVIRT "$LOG")"
+    exit 1
+  fi
+}
+
+mostrar_estado() {
+  msgln ESTADO_DOMINIO "$DOM"
+  msgln ESTADO_VM "$(vm_estado)"
+  msgln ESTADO_KEMPER_LINUX "$(kemper_en_host)"
+  msgln ESTADO_KEMPER_VM "$(kemper_en_vm)"
+  msgln ESTADO_AGENTE "$(agente_responde && msg RESPONDE || msg NO_RESPONDE)"
+}
+
+apagar() {
+  local e; e="$(vm_estado)"
+  if [[ "$e" != "running" ]]; then msgln VM_YA_APAGADA "$e"; return 0; fi
+  msgln APAGANDO_WINDOWS
+  virsh -c "$URI" shutdown "$DOM" >/dev/null 2>&1 || true
+  for _ in $(seq 1 40); do
+    [[ "$(vm_estado)" == "running" ]] || break
+    sleep 3
+  done
+  if [[ "$(vm_estado)" == "running" ]]; then
+    msgln FORZANDO_APAGADO
+    virsh -c "$URI" destroy "$DOM" >/dev/null 2>&1 || true
+  fi
+  sleep 2
+  # virt-viewer se lanza con --reconnect (util: si Windows se reinicia solo por
+  # una actualizacion, la ventana vuelve). El efecto colateral es que, cuando la
+  # VM se apaga de verdad, puede quedarse una ventana viva mostrando "la maquina
+  # no esta en marcha". Despues de apagar de verdad no sirve para nada, asi que
+  # se cierra (solo las ventanas de ESTE dominio; el patron no coincide con este
+  # script, que se llama 'kemper-rig-manager', no 'virt-viewer').
+  # Se identifica cada proceso por su EJECUTABLE real (/proc/PID/exe), no por el
+  # texto de la linea de ordenes: 'pkill -f' con un patron como
+  # "virt-viewer.*kemper-win11" mata tambien cualquier shell cuya linea de
+  # ordenes contenga las dos palabras (le paso al asistente tres veces, matando
+  # su propia sesion). Filtrando por el ejecutable, este script no puede matarse
+  # a si mismo: su ejecutable es bash, no virt-viewer.
+  local p exe
+  for p in $(pgrep -f virt-viewer 2>/dev/null); do
+    exe="$(readlink -f "/proc/$p/exe" 2>/dev/null)"
+    [[ "$exe" == *virt-viewer* ]] || continue
+    grep -qa "$DOM" "/proc/$p/cmdline" 2>/dev/null || continue
+    kill "$p" 2>/dev/null || true
+    msgln VENTANA_CERRADA "$p"
+  done
+  msgln VM_APAGADA "$(kemper_en_host)"
+  log "apagado. kemper_en_host=$(kemper_en_host)"
+}
+
+abrir() {
+  comprobar_libvirt
+
+  if ! virsh -c "$URI" dominfo "$DOM" >/dev/null 2>&1; then
+    error "$(msg ERROR_VM_NO_CREADA "$DOM")"
+    exit 1
+  fi
+
+  local estado; estado="$(vm_estado)"
+
+  # 1. Arrancar
+  if [[ "$estado" != "running" ]]; then
+    msgln ARRANCANDO_ECHO
+    info "$(msg ARRANCANDO_INFO)"
+    virsh -c "$URI" start "$DOM" >/dev/null || { error "$(msg ERROR_ARRANCAR_VM "$LOG")"; exit 1; }
+    # esperar al agente (máx. 4 minutos). Si es la primerísima instalación,
+    # puede tardar más: se avisa y se abre igualmente la ventana.
+    for _ in $(seq 1 80); do agente_responde && break; sleep 3; done
+    log "arranque: agente=$(agente_responde && echo sí || echo no)"
+    if ! agente_responde; then
+      info "$(msg WINDOWS_ARRANCANDO_INFO)"
+    fi
+  fi
+
+  # 2. Conectar el Kemper
+  if [[ "$(kemper_en_vm)" == "sí" ]]; then
+    msgln KEMPER_YA_CONECTADO
+    # Sin esto, cuando la VM ya venía con el Kemper dentro (sesión anterior) el
+    # registro no decía nada y parecía que el lanzador no había hecho nada.
+    log "kemper ya estaba conectado a la VM (no hay que conectarlo)"
+  elif [[ "$(kemper_en_host)" == "sí" ]]; then
+    msgln CONECTANDO_KEMPER
+    if virsh -c "$URI" attach-device "$DOM" "$HW" --live >/dev/null 2>&1; then
+      sleep 2
+      log "kemper conectado a la VM"
+    else
+      error "$(msg ERROR_CONECTAR_KEMPER "$LOG")"
+    fi
+  else
+    # Este camino solo se alcanza si el aparato NO está dentro de la VM
+    # (eso se decide arriba, en el primer 'if') ni tiene controlador en Linux:
+    # o sea, está apagado o desenchufado. Se avisa y se deja un vigilante.
+    info "$(msg INFO_KEMPER_AUSENTE)"
+    log "kemper ausente en el host al abrir"
+  fi
+
+  # 2b. Vigilante: si el Kemper aparece (o reaparece) con la VM en marcha, se
+  # conecta solo. Asi da igual el orden: encenderlo antes o despues de abrir.
+  nohup "$PROYECTO/scripts/45-vigilar-kemper.sh" >>"$LOG" 2>&1 &
+  log "vigilante del Kemper lanzado (pid $!)"
+
+  # 3. Abrir la consola
+  local rc=0
+  asegurar_virt_viewer_sin_pregunta
+  if command -v virt-viewer >/dev/null 2>&1; then
+    virt-viewer --connect "$URI" --wait --reconnect "$DOM" || rc=$?
+  elif command -v virt-manager >/dev/null 2>&1; then
+    virt-manager --connect "$URI" --show-domain-console "$DOM" || rc=$?
+  else
+    error "$(msg ERROR_SIN_VENTANA)"
+    exit 1
+  fi
+  log "ventana cerrada (código $rc)"
+
+  # 4. Al cerrar la ventana: apagar Windows y devolver el Kemper a Linux.
+  #
+  # Aqui ANTES se preguntaba ("¿Apago Windows?") con un dialogo Si/No. Fue un
+  # error de diseño: cerrar ese dialogo con la X (o con Escape) cuenta como
+  # "Cancelar", o sea que el usuario cerraba la ventana, cerraba el dialogo
+  # creyendo que habia dicho que si, y Windows seguia en marcha sin que se
+  # enterase (esta documentado en el registro como "usuario eligio NO apagar").
+  # Cerrar la ventana significa "he terminado", asi que se hace sin preguntar.
+  # Para el caso raro de querer dejar Windows encendido: --dejar-abierto.
+  if [[ "$(vm_estado)" == "running" ]]; then
+    if [[ "${DEJAR_ABIERTO:-no}" == "si" ]]; then
+      log "ventana cerrada con --dejar-abierto: Windows sigue en marcha"
+      info "$(msg INFO_DEJAR_ABIERTO)"
+    else
+      log "ventana cerrada: apagando Windows (sin preguntar)"
+      apagar
+      info "$(msg INFO_WINDOWS_APAGADO)"
+    fi
+  fi
+}
+
+case "${1:-}" in
+  --estado)          comprobar_libvirt; mostrar_estado ;;
+  --apagar)          comprobar_libvirt; apagar ;;
+  --dejar-abierto)   comprobar_libvirt; DEJAR_ABIERTO=si; abrir ;;
+  --ayuda|-h|--help)
+    # Imprime el encabezado de comentarios hasta la primera linea que no lo sea.
+    # (Con un rango fijo de lineas, la ayuda empezaba a escupir codigo en cuanto
+    # el encabezado crecia; paso el 31-oct al anadir --dejar-abierto.)
+    awk 'NR>1 && /^#/ { sub(/^# ?/, ""); print; next } NR>1 { exit }' "${BASH_SOURCE[0]}" ;;
+  "")        abrir ;;
+  *)         msgln OPCION_NO_RECONOCIDA "$1" >&2; msgln USA_AYUDA >&2; exit 2 ;;
+esac

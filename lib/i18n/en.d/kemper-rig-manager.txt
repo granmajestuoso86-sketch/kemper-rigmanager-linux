@@ -1,0 +1,30 @@
+# Texts for kemper-rig-manager — Rig Manager VM (English)
+# Formato: CLAVE=Texto    (% -> %%   salto de línea -> \n)
+
+ERROR_LIBVIRT=I can't talk to libvirt.\n\nIf you have just installed the system, LOG OUT and log back in\n(the 'libvirt' group does not apply to the session that is already open).\n\nTechnical detail in: %s
+ESTADO_DOMINIO=domain            : %s
+ESTADO_VM=VM state          : %s
+ESTADO_KEMPER_LINUX=Kemper on Linux   : %s
+ESTADO_KEMPER_VM=Kemper in the VM  : %s
+ESTADO_AGENTE=guest agent       : %s
+RESPONDE=responds
+NO_RESPONDE=not responding
+VM_YA_APAGADA=The VM is already off (%s).
+APAGANDO_WINDOWS=Shutting Windows down (gracefully)...
+FORZANDO_APAGADO=Windows did not shut down within 2 minutes; forcing shutdown.
+VENTANA_CERRADA=closed the window that was left open (pid %s)
+VM_APAGADA=VM off. Kemper on Linux: %s
+ERROR_VM_NO_CREADA=The virtual machine '%s' is not created yet.\nRun first:  scripts/20-crear-vm.sh
+ARRANCANDO_ECHO=Starting Windows (the first time it takes a little while)...
+ARRANCANDO_INFO=Starting Windows. The first time it may take a minute;\nafter that you'll see the window with Rig Manager.
+ERROR_ARRANCAR_VM=I couldn't start the VM. See %s
+WINDOWS_ARRANCANDO_INFO=Windows is still starting (or this is the initial install).\nI'll open the window anyway: wait until it reaches the desktop.
+KEMPER_YA_CONECTADO=The Kemper was already connected to the VM.
+CONECTANDO_KEMPER=Connecting the Kemper to the virtual machine...
+ERROR_CONECTAR_KEMPER=I couldn't connect the Kemper to the VM.\nRig Manager will open anyway, but it won't see the device.\nDetail in: %s
+INFO_KEMPER_AUSENTE=The Kemper is not plugged in (or it is off) right now.\nNo problem: I'll leave a watcher that will connect it BY ITSELF as soon as you turn it on.\nYou can still use Rig Manager with your local library.\n\nImportant note: while the virtual machine is running, the Kemper\nbelongs to Windows. To use it again with your Linux editor, close\nthe window and shut Windows down (or run 'kemper-rig-manager --apagar').
+ERROR_SIN_VENTANA=I have no window to show you (virt-viewer and virt-manager are missing).\nInstall them with:  sudo apt install virt-viewer virt-manager
+INFO_DEJAR_ABIERTO=Windows is still running and the Kemper is still connected to the virtual machine.\n\nRemember: while it stays like this, your Linux editor does NOT see the Kemper.\nTo free it:  kemper-rig-manager --apagar
+INFO_WINDOWS_APAGADO=Windows shut down.\n\nThe Kemper goes back to Linux: your native editor should see it within seconds\n(if not, unplug and plug the USB back in).
+OPCION_NO_RECONOCIDA=Unrecognised option: %s
+USA_AYUDA=Use --ayuda

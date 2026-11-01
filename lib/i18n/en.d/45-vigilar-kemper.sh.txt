@@ -1,0 +1,5 @@
+# Texts for scripts/45-vigilar-kemper.sh
+VIGILANTE_EN_MARCHA=watcher running (domain %s)
+VIGILANTE_KEMPER_CONECTADO=Kemper connected automatically
+VIGILANTE_KEMPER_FALLO=could not connect the Kemper (retrying)
+VIGILANTE_VM_PARADA=the VM is no longer running: watcher ends

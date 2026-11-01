@@ -1,0 +1,33 @@
+# Texts for scripts/20-crear-vm.sh (English)
+# Format: KEY=Text    (% -> %%   newline -> \n)
+
+CREAR_ERR_PLANTILLA=ERROR: %s is missing
+CREAR_AVISO_MARCADORES=WARNING: markers left unsubstituted: %s
+CREAR_GEN=== Generating the VM definition (creating nothing) ==
+CREAR_FICHERO=   file: %s
+CREAR_VALIDADA=   validated against the official libvirt schema
+CREAR_NO_VALIDA=   does NOT pass validation:
+CREAR_NOMBRE=   VM name    : %s
+CREAR_RAM=   RAM / cores    : %s MB / %s
+CREAR_DISCO=   disk           : %s GB in %s
+CREAR_ISO=   Windows ISO    : %s
+CREAR_DEF_GEN== VM definition generated: %s ==
+CREAR_AVISO_NOVALIDA=   WARNING: it doesn't pass validation
+CREAR_SIMULACRO=   [dry run] virsh %s
+CREAR_PREVIAS== Pre-checks ==
+CREAR_ERR_VIRSH=ERROR: virsh is missing
+CREAR_ERR_LIBVIRT=ERROR: I can't talk to libvirt (%s).
+CREAR_ERR_LIBVIRT_H1=  - is the daemon active?        systemctl status libvirtd
+CREAR_ERR_LIBVIRT_H2=  - are you in the libvirt group? id -nG   (if you were just added, log out and back in)
+CREAR_LIBVIRT_OK=   libvirt answers.
+CREAR_P1=== 1/3  Storage pool and disk ==
+CREAR_POOL_EXISTE=   the pool '%s' was already defined
+CREAR_POOL_CREADO=   pool '%s' created and activated (starts with the system)
+CREAR_DISCO_EXISTE=   the disk already exists: %s
+CREAR_P2=== 2/3  Define the domain (idempotent) ==
+CREAR_DOM_EXISTE=   existing domain: updating while keeping its UUID (%s)
+CREAR_P3=== 3/3  vm/ link inside the project ==
+CREAR_SIM_ENLACE=   (dry run) would link %s/vm/%s -> %s
+CREAR_ENLACE=   %s/vm/%s -> %s
+CREAR_SIM_NADA=(dry run: NOTHING was created)
+CREAR_LISTO=Done. Next step: scripts/30-instalar-windows.sh

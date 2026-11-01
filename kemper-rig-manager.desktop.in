@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Rig Manager (Kemper)
+Name[es]=Rig Manager (Kemper)
+GenericName=Editor y bibliotecario del Kemper Profiler
+GenericName[es]=Editor y bibliotecario del Kemper Profiler
+Comment=Abre Windows en una máquina virtual para usar Rig Manager con el Kemper por USB
+Comment[es]=Abre Windows en una máquina virtual para usar Rig Manager con el Kemper por USB
+Exec=@LANZADOR@
+Icon=kemper-rig-manager
+Terminal=false
+Categories=AudioVideo;Audio;X-Kemper;
+Keywords=kemper;rig;manager;profiler;windows;vm;
+StartupNotify=true
+StartupWMClass=virt-viewer

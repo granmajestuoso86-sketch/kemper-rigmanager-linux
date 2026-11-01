@@ -1,0 +1,22 @@
+# Textos de scripts/30-instalar-windows.sh (español)
+# Formato: CLAVE=Texto    (% -> %%   salto de línea -> \n)
+
+WIN_ERR_DOMINIO=ERROR: el dominio '%s' no está definido. Ejecuta antes scripts/20-crear-vm.sh
+WIN_P1=== 1/3  Arranque ==
+WIN_YA_MARCHA=   ya estaba en marcha
+WIN_P2=== 2/3  Aviso del DVD ==
+WIN_NO_PULSA1=   la máquina ya estaba en marcha: NO se envía ninguna pulsación
+WIN_NO_PULSA2=   (durante la instalación hay botones en pantalla que se podrían activar)
+WIN_SIN_IM=   (sin ImageMagick: ventana fija de 14 s)
+WIN_PULSANDO=   Pulsando teclas mientras la pantalla siga en el arranque (máx. 30 s)...
+WIN_SETUP_EN_PANTALLA=   el setup ya está en pantalla (brillo %s): dejo de pulsar en la vuelta %s
+WIN_SOLO_VIGILAR=== modo --solo-vigilar: no se arranca nada ni se pulsa nada ==
+WIN_P3=== 3/3  Vigilancia (máximo %s min, captura cada %ss) ==
+WIN_AGENTE=   [%s] AGENTE DE INVITADO RESPONDE -> Windows operativo y payload instalado
+WIN_ESTADO=   [%s] estado=%s  captura=%s
+WIN_DESCONOCIDO=desconocido
+WIN_NO_MARCHA=   La VM no está en marcha. Fin.
+WIN_MAX_TIEMPO=   Se alcanzó el tiempo máximo. Fin.
+WIN_CAPTURAS=Capturas en: %s
+WIN_PANTALLA=Pantalla en vivo:  virsh -c %s screenshot %s /tmp/pantalla.png
+WIN_CONSOLA=Consola gráfica:   virt-manager --connect %s --show-domain-console %s

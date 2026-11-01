@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Dispositivo USB del Kemper Profiler, para conectar EN CALIENTE.
+
+  Lo usan scripts/40-conectar-kemper.sh y el lanzador, que ya pasan las opciones
+  correctas de virsh (attach-device / detach-device, en modo live).
+
+  Por qué así y no fijo en el XML del dominio: si el Profiler no está enchufado,
+  un hostdev permanente impide ARRANCAR la máquina. Conectar en caliente permite
+  además usar la VM sin el aparato (biblioteca en local).
+
+  managed='yes' => es libvirtd (root) quien abre el dispositivo y le pasa el
+  descriptor a QEMU, con lo que no hacen falta reglas udev ni permisos extra.
+
+  Datos del aparato (verificados en el anfitrión):
+    133e:0003  Kemper Digital GmbH Profiler   serie APEaRiLBATF
+    clase 239 (dispositivo compuesto: audio + MIDI + interfaz del fabricante)
+-->
+<hostdev mode='subsystem' type='usb' managed='yes'>
+  <source>
+    <vendor id='0x133e'/>
+    <product id='0x0003'/>
+  </source>
+</hostdev>

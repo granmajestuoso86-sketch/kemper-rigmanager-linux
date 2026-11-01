@@ -1,0 +1,14 @@
+# Texts for 95-intercambio.py — Rig Manager VM (English)
+# Formato: CLAVE=Texto    (% -> %%   salto de línea -> \n)
+
+INTERCAMBIO_ENVIANDO=\r  sending... %s %%  (%s/%s bytes)
+INTERCAMBIO_AVISO_CERRAR=  warning while closing: %s
+INTERCAMBIO_ENVIADO=\r  sent: %s  ->  %s  (%s bytes)
+INTERCAMBIO_COMPROBACION=  check inside Windows: %s bytes
+INTERCAMBIO_OK_SUFIJO=   OK
+INTERCAMBIO_NO_COINCIDE_SUFIJO=   <-- DOES NOT MATCH
+INTERCAMBIO_RECIBIENDO=\r  receiving... %s bytes
+INTERCAMBIO_RECIBIDO=\r  received: %s  ->  %s  (%s bytes)
+INTERCAMBIO_ERROR=  ERROR: %s
+INTERCAMBIO_TIEMPO_AGOTADO=time out
+INTERCAMBIO_USO=95-intercambio.py — move files between Ubuntu and the Windows inside the VM.\n\nWHY THIS WAY (and not with a shared disk): a shared disk would have to be\nformatted, mounted in Linux (that asks for root every time) and unmounted before\nbooting. With the GUEST AGENT that is already installed none of that is needed:\nyou read and write inside Windows on the fly, without root, without drivers and\nwithout network folders. The agent travels over a virtio-serial channel, not over\nUSB, so it does not get in the Kemper's way either.\n\nUsage:\n    scripts/95-intercambio.py enviar  <local_file> [path_in_windows]\n    scripts/95-intercambio.py recibir <path_in_windows> <local_file>\n    scripts/95-intercambio.py lista   [path_in_windows]\n\nExamples:\n    scripts/95-intercambio.py enviar mi_libreria.rmbackup\n        -> copies to C:\INTERCAMBIO\mi_libreria.rmbackup\n    scripts/95-intercambio.py recibir "C:\INTERCAMBIO\backup.rmbackup" ./backup.rmbackup\n    scripts/95-intercambio.py lista\n

@@ -1,0 +1,6 @@
+# Texts for scripts/90-escribir.py
+USO_ESCRIBIR=90-escribir.py — types text INSIDE the virtual machine via an injected keyboard.\n\nWhy it exists: `virsh send-key` with several keys sends them as a CHORD (all at\nonce, meant for shortcuts like Ctrl+Alt+Del), NOT as text. To really type you have\nto send one key after another.\n\nUsage:\n    scripts/90-escribir.py "D:\payload\instalar.cmd{ENTER}"\n    scripts/90-escribir.py "{WIN}r"          # shortcut\n    scripts/90-escribir.py "hola{ENTER}"     # plain text + Enter\n\nTokens in braces: {ENTER} {TAB} {ESC} {SPACE} {BACKSPACE} {DEL} {WIN} {CTRL}\n                  {ALT} {SHIFT} {F5} {UP} {DOWN} {LEFT} {RIGHT} {HOME} {END}\nIn shortcuts the keys go together: "{WIN}r", "{CTRL}c", "{ALT}{TAB}".
+AVISO_ESCRIBIR=  warning: %s
+AVISO_CARACTER=  warning: unsupported character: %s
+TECLEANDO=  typing %s characters...
+HECHO=  done (%s keystrokes)

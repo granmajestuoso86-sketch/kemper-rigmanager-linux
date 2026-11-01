@@ -1,0 +1,32 @@
+# Texts for scripts/90-verificar-windows.py
+TITULO_0=0. Is the guest agent responding?
+NO_RESPONDE=  Not responding yet: %s
+NO_RESPONDE_NOTA=  (if Windows is still installing, this is normal: wait)
+RESPONDE_OK=  responds OK
+TITULO_1=1. Operating system INSIDE the VM
+PENDIENTE=  PENDIENTE: %s
+TITULO_2=2. Disks and filesystem
+FS_LINEA=  %-12s %-8s %6.1f GiB total, %6.1f GiB used
+PARTICION=      partition %s bus=%s type=%s
+TITULO_3=3. Network (what Rig Manager needs for the Rig Exchange)
+INTERFAZ=  interface: %s (%s)
+TITULO_4=4. Is Rig Manager installed and REGISTERED?
+NO_PRODUCTO=  NO Rig/Kemper product is registered  <-- FALLO
+FALLO_RIG_MANAGER=Rig Manager is NOT installed inside Windows
+TITULO_5=5. Executable and shortcut
+SIN_SALIDA=(no output)
+TITULO_6=6. TPM 2.0 inside Windows
+TITULO_7=7. Unattended installation log (C:\kemper-install.log)
+NO_EXISTE_REGISTRO=(no log file)
+TITULO_8=8. Suspicious activity: any blocking dialog?
+SIN_VENTANAS=(no windows)
+TITULO_9=9. Does Windows see the Kemper over USB?
+NO_DISPOSITIVO_KEMPER=No Kemper device (133e) appears  <-- REVISAR
+TITULO_FIN=End of verification
+FIN_NOTA=  Anything marked REVISAR or PENDIENTE is a finding, not a minor detail.
+INSTALACION_NO_VALIDA=  THE INSTALLATION IS NOT VALID:
+FALLO_KEMPER_NOTA=  (The Kemper not appearing is NOT a failure: you can open Rig Manager\n   without it plugged in, and the watcher will connect it when you turn it on.)
+SIN_FALLOS=  No failures preventing it from being accepted.
+GEXEC_NO_DISPONIBLE=guest-exec not available: %s
+GEXEC_SIN_PID=no pid: %s
+GEXEC_TIMEOUT=timed out waiting for the command

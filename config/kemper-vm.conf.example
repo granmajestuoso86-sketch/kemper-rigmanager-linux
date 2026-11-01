@@ -1,0 +1,44 @@
+# ============================================================================
+#  Tu configuración  —  Rig Manager de Kemper en Linux (dentro de una VM)
+# ============================================================================
+#  CÓMO SE USA:  el instalador (./install.sh) te pregunta y escribe por ti el
+#  fichero real, config/kemper-vm.conf. Si prefieres hacerlo a mano: copia este
+#  ejemplo a config/kemper-vm.conf y rellena tus rutas.
+#
+#  IMPORTANTE: config/kemper-vm.conf NO se publica nunca (lleva tu contraseña y
+#  tus rutas). Está en .gitignore. Este ejemplo sí se publica.
+# ============================================================================
+
+# --- La máquina virtual -----------------------------------------------------
+VM_NOMBRE=kemper-win11          # nombre de la VM (el que verás en 'virsh list')
+VM_RAM_MB=6144                  # RAM para Windows, en MB (6144 = 6 GB)
+VM_VCPUS=4                      # núcleos de CPU que le das a Windows
+VM_DISCO_GB=80                  # tamaño del disco virtual de Windows
+RESOLUCION_VM=1920x1080         # pantalla de Windows: 'auto' (la que elija Windows)
+                                # o un tamaño concreto, p. ej. 1920x1200
+
+# --- Los medios que aportas TÚ (rutas completas) ----------------------------
+# No se pueden incluir en el repositorio: son de Microsoft y de Kemper.
+ISO_WINDOWS=/home/tuusuario/Descargas/Win11_IoT_LTSC_2024.iso
+INSTALADOR_RIGMANAGER=/home/tuusuario/Descargas/Rig_Manager_4_3_13_Windows_64-bit.msi
+# El ISO de los drivers de virtio (lo publica Fedora, es libre):
+#   https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso
+# El instalador lo descarga si falta, pero si ya lo tienes, ponlo aquí.
+VIRTIO_ISO=/home/tuusuario/Descargas/virtio-win.iso
+
+# La edición EXACTA del ISO, por nombre (no por número):
+EDICION_WINDOWS=Windows 11 IoT Enterprise LTSC 2024
+
+# --- La cuenta de Windows que se crea sola ----------------------------------
+CUENTA_USUARIO=kemper
+CUENTA_CLAVE=cambiaestaclave    # elige la tuya; se queda en este fichero
+
+# --- Activación (opcional) --------------------------------------------------
+# Vacío = Windows queda SIN activar. Funciona igual (con marca de agua).
+CLAVE_PRODUCTO=
+
+# --- Rutas del sistema (normalmente no hay que tocar nada) ------------------
+POOL=kemper                     # nombre del pool de libvirt con los discos
+VM_DISCO_DIR=/var/lib/libvirt/images
+VID_KEMPER=133e                 # identificador USB del Kemper Profiler
+PID_KEMPER=0003

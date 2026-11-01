@@ -1,0 +1,14 @@
+# Textos de 95-intercambio.py — Rig Manager VM (español)
+# Formato: CLAVE=Texto    (% -> %%   salto de línea -> \n)
+
+INTERCAMBIO_ENVIANDO=\r  enviando... %s %%  (%s/%s bytes)
+INTERCAMBIO_AVISO_CERRAR=  aviso al cerrar: %s
+INTERCAMBIO_ENVIADO=\r  enviado: %s  ->  %s  (%s bytes)
+INTERCAMBIO_COMPROBACION=  comprobación en Windows: %s bytes
+INTERCAMBIO_OK_SUFIJO=   OK
+INTERCAMBIO_NO_COINCIDE_SUFIJO=   <-- NO COINCIDE
+INTERCAMBIO_RECIBIENDO=\r  recibiendo... %s bytes
+INTERCAMBIO_RECIBIDO=\r  recibido: %s  ->  %s  (%s bytes)
+INTERCAMBIO_ERROR=  ERROR: %s
+INTERCAMBIO_TIEMPO_AGOTADO=tiempo agotado
+INTERCAMBIO_USO=95-intercambio.py — pasar ficheros entre Ubuntu y el Windows de la VM.\n\nPOR QUÉ ASÍ (y no con un disco compartido): un disco compartido habría que\nformatearlo, montarlo en Linux (eso pide root cada vez) y desmontarlo antes de\narrancar. Con el AGENTE DE INVITADO que ya está instalado no hace falta nada de\neso: se lee y se escribe dentro de Windows en caliente, sin root, sin drivers y\nsin carpetas de red. El agente viaja por un canal virtio-serial, no por USB, así\nque tampoco estorba al Kemper.\n\nUso:\n    scripts/95-intercambio.py enviar  <fichero_local> [ruta_en_windows]\n    scripts/95-intercambio.py recibir <ruta_en_windows> <fichero_local>\n    scripts/95-intercambio.py lista   [ruta_en_windows]\n\nEjemplos:\n    scripts/95-intercambio.py enviar mi_libreria.rmbackup\n        -> copia a C:\INTERCAMBIO\mi_libreria.rmbackup\n    scripts/95-intercambio.py recibir "C:\INTERCAMBIO\backup.rmbackup" ./backup.rmbackup\n    scripts/95-intercambio.py lista\n

@@ -1,0 +1,6 @@
+# Textos de lib/config.sh (avisos de configuración y medios que ve el usuario).
+CONF_SIN_FICHERO=No encuentro config/kemper-vm.conf.\n\nEs el fichero donde van TUS rutas (el ISO de Windows y el instalador de Rig\nManager). Se crea solo ejecutando ./install.sh, o a mano:\n\n    cp config/kemper-vm.conf.example config/kemper-vm.conf\n    # y luego edítalo con tus rutas
+CONF_FALTA_ISO_DEF=  FALTA: ISO_WINDOWS no está definido en config/kemper-vm.conf
+CONF_FALTA_ISO_RUTA=  FALTA: el ISO de Windows no existe en: %s
+CONF_FALTA_MSI_DEF=  FALTA: INSTALADOR_RIGMANAGER no está definido en config/kemper-vm.conf
+CONF_FALTA_MSI_RUTA=  FALTA: el instalador de Rig Manager no existe en: %s

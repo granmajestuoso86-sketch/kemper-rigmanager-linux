@@ -1,0 +1,11 @@
+# Textos en español — Rig Manager VM
+# Formato: CLAVE=Texto    (% -> %%   salto de línea -> \\n)
+# Si falta una clave, se usa la del otro idioma y se avisa.
+
+IDIOMA_ACTUAL=Idioma de los mensajes: %s\n
+MODO_SIMULACRO=[simulacro] se ejecutaría: %s\n
+SI=sí
+NO=no
+ERROR=ERROR
+AVISO=AVISO
+OK=OK

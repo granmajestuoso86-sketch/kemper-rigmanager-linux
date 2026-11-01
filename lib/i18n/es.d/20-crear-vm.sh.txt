@@ -1,0 +1,33 @@
+# Textos de scripts/20-crear-vm.sh (español)
+# Formato: CLAVE=Texto    (% -> %%   salto de línea -> \n)
+
+CREAR_ERR_PLANTILLA=ERROR: falta %s
+CREAR_AVISO_MARCADORES=AVISO: quedaron marcadores sin sustituir: %s
+CREAR_GEN=== Generando la definición de la VM (sin crear nada) ==
+CREAR_FICHERO=   fichero: %s
+CREAR_VALIDADA=   validada contra el esquema oficial de libvirt
+CREAR_NO_VALIDA=   NO pasa la validación:
+CREAR_NOMBRE=   nombre de la VM : %s
+CREAR_RAM=   RAM / núcleos   : %s MB / %s
+CREAR_DISCO=   disco           : %s GB en %s
+CREAR_ISO=   ISO Windows     : %s
+CREAR_DEF_GEN== Definición de la VM generada: %s ==
+CREAR_AVISO_NOVALIDA=   AVISO: no pasa la validación
+CREAR_SIMULACRO=   [simulacro] virsh %s
+CREAR_PREVIAS== Comprobaciones previas ==
+CREAR_ERR_VIRSH=ERROR: falta virsh
+CREAR_ERR_LIBVIRT=ERROR: no puedo hablar con libvirt (%s).
+CREAR_ERR_LIBVIRT_H1=  - ¿está activo el demonio?      systemctl status libvirtd
+CREAR_ERR_LIBVIRT_H2=  - ¿perteneces al grupo libvirt? id -nG   (si te acaban de añadir, cierra sesión y entra)
+CREAR_LIBVIRT_OK=   libvirt responde.
+CREAR_P1=== 1/3  Grupo de almacenamiento y disco ==
+CREAR_POOL_EXISTE=   el grupo '%s' ya estaba definido
+CREAR_POOL_CREADO=   grupo '%s' creado y activado (arranca solo con el sistema)
+CREAR_DISCO_EXISTE=   el disco ya existe: %s
+CREAR_P2=== 2/3  Definir el dominio (idempotente) ==
+CREAR_DOM_EXISTE=   dominio ya existente: se actualiza conservando su UUID (%s)
+CREAR_P3=== 3/3  Enlace vm/ dentro del proyecto ==
+CREAR_SIM_ENLACE=   (simulacro) se enlazaría %s/vm/%s -> %s
+CREAR_ENLACE=   %s/vm/%s -> %s
+CREAR_SIM_NADA=(simulacro: no se ha creado NADA)
+CREAR_LISTO=Listo. Siguiente paso: scripts/30-instalar-windows.sh

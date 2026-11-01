@@ -1,0 +1,22 @@
+# Texts for scripts/30-instalar-windows.sh (English)
+# Format: KEY=Text    (% -> %%   newline -> \n)
+
+WIN_ERR_DOMINIO=ERROR: the domain '%s' is not defined. Run scripts/20-crear-vm.sh first
+WIN_P1=== 1/3  Boot ==
+WIN_YA_MARCHA=   it was already running
+WIN_P2=== 2/3  DVD prompt ==
+WIN_NO_PULSA1=   the machine was already running: NO key presses are sent
+WIN_NO_PULSA2=   (during setup there are on-screen buttons that could be triggered)
+WIN_SIN_IM=   (no ImageMagick: fixed 14 s window)
+WIN_PULSANDO=   Pressing keys while the screen is still booting (max 30 s)...
+WIN_SETUP_EN_PANTALLA=   the setup is already on screen (brightness %s): stop pressing at round %s
+WIN_SOLO_VIGILAR=== --solo-vigilar mode: nothing is started and nothing is pressed ==
+WIN_P3=== 3/3  Watching (max %s min, screenshot every %ss) ==
+WIN_AGENTE=   [%s] GUEST AGENT ANSWERS -> Windows up and payload installed
+WIN_ESTADO=   [%s] state=%s  screenshot=%s
+WIN_DESCONOCIDO=unknown
+WIN_NO_MARCHA=   The VM is not running. Done.
+WIN_MAX_TIEMPO=   Maximum time reached. Done.
+WIN_CAPTURAS=Screenshots in: %s
+WIN_PANTALLA=Live screen:  virsh -c %s screenshot %s /tmp/pantalla.png
+WIN_CONSOLA=Graphical console:   virt-manager --connect %s --show-domain-console %s

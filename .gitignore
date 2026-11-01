@@ -1,0 +1,41 @@
+# ---------------------------------------------------------------------------
+#  Lo que NUNCA debe subirse a un repositorio público.
+#  Si añades algo aquí, pregúntate: ¿esto es mío, o es de Microsoft/Kemper?
+# ---------------------------------------------------------------------------
+
+# Tu configuración: lleva TUS rutas y TU contraseña de la VM
+config/kemper-vm.conf
+
+# La definición de tu VM y su disco (se generan solos).
+# OJO: config/hostdev-kemper.xml NO es generado, es la plantilla del aparato USB
+# del Kemper, y SÍ se publica. Con la regla 'config/*.xml' a secas se quedaba
+# fuera en silencio: quien clonara el repositorio no podría conectar el Kemper.
+config/*.xml
+!config/hostdev-kemper.xml
+vm/
+
+# Los medios de instalación: son de Microsoft y de Kemper, no se pueden
+# distribuir. Cada usuario aporta los suyos.
+install/*.iso
+install/autounattend.xml
+install/payload/*.msi
+
+# El icono OFICIAL de Rig Manager: es de Kemper y no se distribuye. Se extrae
+# en cada equipo desde el propio programa (ver el manual). El icono propio del
+# proyecto (icono/kemper-rig-manager.svg) SÍ se publica.
+icono/rig-manager/
+
+# Registros y pruebas (llevan datos de la máquina de cada uno)
+logs/
+evidencia/
+*.log
+
+# Basura de ejecución
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Basura de editores
+*~
+*.swp
+.DS_Store

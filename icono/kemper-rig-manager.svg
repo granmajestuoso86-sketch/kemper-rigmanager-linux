@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Icono propio del lanzador (dibujo genérico nuestro: sin logotipos de terceros).
+  Se instala en ~/.local/share/icons/hicolor/scalable/apps/
+  Colores planos a propósito: se renderizan igual en cualquier motor (librsvg,
+  ImageMagick, navegador), a diferencia de los degradados, que algunos ignoran.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- cuerpo -->
+  <rect x="16" y="16" width="224" height="224" rx="46" fill="#33383f"/>
+  <rect x="20" y="20" width="216" height="216" rx="42" fill="none" stroke="#20242a" stroke-width="6"/>
+
+  <!-- curva de respuesta del amplificador -->
+  <path d="M46 172 C 78 172, 88 88, 116 88 C 144 88, 152 128, 180 128 C 198 128, 208 114, 212 104"
+        fill="none" stroke="#eda13c" stroke-width="13" stroke-linecap="round"/>
+
+  <!-- mandos -->
+  <circle cx="74"  cy="206" r="12" fill="#9aa2ad"/>
+  <circle cx="128" cy="206" r="12" fill="#9aa2ad"/>
+  <circle cx="182" cy="206" r="12" fill="#eda13c"/>
+</svg>

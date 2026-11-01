@@ -1,0 +1,19 @@
+# Comprobación de herramientas externas (prueba de fuego en Debian, 1-nov-2026).
+FALTA_HERRAMIENTA=A required program is missing: '%s' (package '%s').
+FALTA_HERRAMIENTA_COMO=Install it with:  sudo apt install %s    —or re-run phase %s, which installs it.
+FALTA_HERRAMIENTA_MORIR=I can't go on without '%s'.
+
+# Asistente: virtio-win es opcional (Enter = descargarlo).
+NO_EXISTE_FICHERO=I can't find that file: %s
+VIRTIO_SE_DESCARGA=No problem: I'll download it myself when its phase comes (needs internet).
+
+# Configuración copiada de otra máquina.
+CONF_DE_OTRA_MAQUINA=The configuration in this folder comes from ANOTHER machine: it points to files that don't exist here. I'll redo it with you.
+
+# Aviso del primer arranque (reportado en la prueba en Debian).
+FIN_REINICIO=  Note: the first time, Windows may ask you to RESTART when you open Rig Manager.\n  That's normal (it has just installed its drivers): restart and open it again.
+
+# Resolución de pantalla de la VM (petición del usuario).
+PREGUNTAR_RESOLUCION=Windows screen ('auto' or a size, e.g. 1920x1200)
+RESOLUCION_NO_VALIDA=I don't understand '%s': leaving it automatic ('auto'). Examples: auto, 1920x1200, 2560x1440.
+BUILD_RESOLUCION=   requested screen resolution: %s (the Windows installer will set it)

@@ -1,0 +1,46 @@
+# Texts for scripts/00-setup-root.sh (English)
+# Format: KEY=Text    (% -> %%   newline -> \n)
+
+SETUP_ERR_SIN_USUARIO=ERROR: I can't tell which user should join the 'libvirt' group.
+SETUP_ERR_SIN_USUARIO_SUDO=       Run it with sudo from YOUR session (not as root directly):
+SETUP_ERR_SIN_USUARIO_ORDEN=           sudo bash scripts/00-setup-root.sh
+SETUP_ERR_ROOT=ERROR: this script needs root. Run it with:  sudo bash "%s"
+SETUP_ERR_USUARIO=ERROR: the user '%s' does not exist.
+SETUP_RAYA===============================================================
+SETUP_TITULO= Rig Manager VM — platform preparation (root)
+SETUP_CAB_DATOS= user: %s    project: %s
+SETUP_P1=== 1/5  Packages ==
+SETUP_NUCLEO=-- core: %s
+SETUP_OPC=-- optional (if one doesn't exist on this Ubuntu, it's flagged and we move on):
+SETUP_OK_PAQ=   OK        %s
+SETUP_AVISO_PAQ=   WARNING   %s  (unavailable or failed; not blocking)
+SETUP_P2=== 2/5  User groups ==
+SETUP_GRUPOS_ANTES=   before: %s
+SETUP_GRUPOS_AHORA=   now:    %s
+SETUP_P3=== 3/5  libvirt daemon and NAT network ==
+SETUP_LIBVIRTD_ACTIVO=   libvirtd.service: ACTIVE
+SETUP_LIBVIRTD_REVISAR=   libvirtd.service: check it (it may run via socket)
+SETUP_REDES=-- known libvirt networks:
+SETUP_AVISO_VIRSH=   WARNING: libvirtd doesn't answer virsh yet
+SETUP_RED_ESTADO=-- network 'default' status:
+SETUP_AVISO_RED=   WARNING: the 'default' network doesn't exist (libvirt creates it on install). Check it.
+SETUP_P4=== 4/5  VM disk and read permissions for QEMU ==
+SETUP_DISCOS=   VM disks: %s
+SETUP_ACL=   read ACLs granted to %s on the project's media
+SETUP_AVISO_QEMUUSER=   WARNING: user %s doesn't exist; is libvirt installed?
+SETUP_P5=== 5/5  Verification ==
+SETUP_KVM=--- KVM:
+SETUP_KVM_OK=   /dev/kvm: accessible
+SETUP_KVM_NO=   /dev/kvm: NOT accessible
+SETUP_VERSIONES=--- versions:
+SETUP_UEFI=--- UEFI (OVMF):
+SETUP_AVISO_OVMF=   WARNING: I can't find OVMF_CODE*.fd
+SETUP_GUI=--- GUI tools:
+SETUP_HERRAMIENTA=   %-14s %s\n
+SETUP_NO_HERRAMIENTA=NO
+SETUP_RED_DEFAULT=--- default network:
+SETUP_FIN1= DONE. Paste this whole output into the chat.
+SETUP_FIN2= Note: your already-open graphical session does NOT have the 'libvirt' group
+SETUP_FIN3= yet (you need to log out and back in for the menu).
+SETUP_FIN4= So that I can keep working without you logging out, it's fine:
+SETUP_FIN5= libvirt can be managed right now anyway.

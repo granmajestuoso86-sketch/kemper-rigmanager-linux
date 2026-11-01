@@ -1,0 +1,6 @@
+# Textos de scripts/90-escribir.py
+USO_ESCRIBIR=90-escribir.py — escribe texto DENTRO de la máquina virtual por teclado inyectado.\n\nPor qué existe: `virsh send-key` con varias teclas las envía como ACORDE (todas\na la vez, pensado para atajos tipo Ctrl+Alt+Supr), NO como texto. Para teclear de\nverdad hay que enviar una tecla detrás de otra.\n\nUso:\n    scripts/90-escribir.py "D:\payload\instalar.cmd{ENTER}"\n    scripts/90-escribir.py "{WIN}r"          # atajo\n    scripts/90-escribir.py "hola{ENTER}"     # texto simple + Enter\n\nTokens entre llaves: {ENTER} {TAB} {ESC} {SPACE} {BACKSPACE} {DEL} {WIN} {CTRL}\n                     {ALT} {SHIFT} {F5} {UP} {DOWN} {LEFT} {RIGHT} {HOME} {END}\nEn los atajos, las teclas van juntas: "{WIN}r", "{CTRL}c", "{ALT}{TAB}".
+AVISO_ESCRIBIR=  aviso: %s
+AVISO_CARACTER=  aviso: carácter no soportado: %s
+TECLEANDO=  tecleando %s caracteres...
+HECHO=  hecho (%s pulsaciones)

@@ -1,0 +1,9 @@
+# Textos de scripts/50-expulsar-isos.sh
+ERROR_DOMINIO_NO_DEFINIDO=ERROR: dominio '%s' no definido
+EXPULSANDO_MEDIOS=== Expulsando medios ópticos (sdb = instalación desatendida, sdc = Windows) ==
+EXPULSAR_DEV=   %s: 
+EXPULSADO=expulsado
+AVISO_NO_EXPULSADO=AVISO: no se pudo expulsar (¿ya estaba vacío o la VM está apagada?)
+ESTADO_DISCOS_XML=== Estado de los discos en el XML ==
+SIGUIENTE_LANZADOR=Siguiente: arranca/conecta con el lanzador  scripts/kemper-rig-manager
+EXPULSAR_REINSERTAR=(Si en algún momento necesitas el medio de instalación otra vez —por ejemplo para una reparación— se puede volver a insertar con:

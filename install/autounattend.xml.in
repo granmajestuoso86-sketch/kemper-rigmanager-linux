@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  autounattend.xml — instalación desatendida de Windows 11 IoT Enterprise LTSC 2024
+  para la máquina virtual @VM_NOMBRE@ (Rig Manager de Kemper sobre QEMU/KVM).
+
+  Imagen elegida del install.wim (verificado con el XML interno del WIM: 3 imágenes):
+     [1] Windows 11 Enterprise LTSC 2024                    (EnterpriseS)
+     [2] Windows 11 IoT Enterprise LTSC 2024                (IoTEnterpriseS)  <== ESTA
+     [3] Windows 11 IoT Enterprise Subscription LTSC 2024   (IoTEnterpriseSK)
+
+  LECCIÓN APRENDIDA (primer intento fallido, ver manual §10): si en <UserData> no
+  hay <ProductKey> con <WillShowUI>Never</WillShowUI>, el asistente SE PARA en la
+  página "Product key" aunque el fichero de respuestas se aplique correctamente.
+  Aquí se usa la clave GVLK pública que Microsoft publica para esta edición, que
+  además selecciona la imagen correcta. NO activa nada por sí sola: sin licencia
+  ni servidor KMS, Windows queda sin activar (marca de agua), sin caducidad.
+
+  Orden de los elementos: se sigue el de la documentación del esquema de Microsoft
+  (alfabético dentro de cada componente). Windows Setup es tolerante, pero Windows
+  SIM (la herramienta que valida de verdad) no lo es.
+
+  Decisiones de diseño:
+   - Disco SATA/AHCI, red e1000e y vídeo stdvga: drivers DE SERIE de Windows. Sin
+     rutas de driver ni letras de unidad que adivinar durante el setup.
+   - Cuenta local "kemper" con contraseña y inicio de sesión automático.
+     OJO — LECCIÓN CARA (ver manual §10): una cuenta creada por el fichero de
+     respuestas SIN contraseña queda marcada con "The user's password must be
+     changed before signing in" y Windows NO deja entrar; el asistente se queda
+     parado en la pantalla de inicio de sesión para siempre. Con contraseña
+     explícita, entra solo. La contraseña es la palabra `kemper`: es una máquina
+     local, de un solo uso, y viene documentada en el manual (se puede cambiar).
+   - Idioma en-US en todo (así el setup no puede rechazar una configuración
+     regional que no exista en el medio). El teclado español se añade después.
+   - Bloque LabConfig: seguro para la comprobación de "arranque seguro capaz".
+     Aun así damos TPM 2.0 real (swtpm) y UEFI real (OVMF).
+-->
+<unattend xmlns="urn:schemas-microsoft-com:unattend">
+
+  <!-- =================== windowsPE =================== -->
+  <settings pass="windowsPE">
+
+    <component name="Microsoft-Windows-International-Core-WinPE"
+               processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35"
+               language="neutral" versionScope="nonSxS"
+               xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+      <SetupUILanguage>
+        <UILanguage>en-US</UILanguage>
+      </SetupUILanguage>
+      <InputLocale>0409:00000409</InputLocale>
+      <SystemLocale>en-US</SystemLocale>
+      <UILanguage>en-US</UILanguage>
+      <UserLocale>en-US</UserLocale>
+    </component>
+
+    <component name="Microsoft-Windows-Setup"
+               processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35"
+               language="neutral" versionScope="nonSxS"
+               xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+
+      <!-- Particionado UEFI/GPT: EFI 300 MB + MSR 16 MB + resto NTFS -->
+      <DiskConfiguration>
+        <WillShowUI>OnError</WillShowUI>
+        <Disk wcm:action="add">
+          <DiskID>0</DiskID>
+          <WillWipeDisk>true</WillWipeDisk>
+          <CreatePartitions>
+            <CreatePartition wcm:action="add">
+              <Order>1</Order>
+              <Type>EFI</Type>
+              <Size>300</Size>
+            </CreatePartition>
+            <CreatePartition wcm:action="add">
+              <Order>2</Order>
+              <Type>MSR</Type>
+              <Size>16</Size>
+            </CreatePartition>
+            <CreatePartition wcm:action="add">
+              <Order>3</Order>
+              <Type>Primary</Type>
+              <Extend>true</Extend>
+            </CreatePartition>
+          </CreatePartitions>
+          <ModifyPartitions>
+            <ModifyPartition wcm:action="add">
+              <Order>1</Order>
+              <PartitionID>1</PartitionID>
+              <Label>System</Label>
+              <Format>FAT32</Format>
+            </ModifyPartition>
+            <ModifyPartition wcm:action="add">
+              <Order>2</Order>
+              <PartitionID>2</PartitionID>
+            </ModifyPartition>
+            <ModifyPartition wcm:action="add">
+              <Order>3</Order>
+              <PartitionID>3</PartitionID>
+              <Label>Windows</Label>
+              <Letter>C</Letter>
+              <Format>NTFS</Format>
+            </ModifyPartition>
+          </ModifyPartitions>
+        </Disk>
+      </DiskConfiguration>
+
+      <!-- Qué edición instalar, por NOMBRE (inequívoco) -->
+      <ImageInstall>
+        <OSImage>
+          <InstallFrom>
+            <MetaData wcm:action="add">
+              <Key>/IMAGE/NAME</Key>
+              <Value>@EDICION_WINDOWS@</Value>
+            </MetaData>
+          </InstallFrom>
+          <InstallTo>
+            <DiskID>0</DiskID>
+            <PartitionID>3</PartitionID>
+          </InstallTo>
+          <WillShowUI>OnError</WillShowUI>
+        </OSImage>
+      </ImageInstall>
+
+      <!-- Seguro contra la comprobación de requisitos de Windows 11 -->
+      <RunSynchronous>
+        <RunSynchronousCommand wcm:action="add">
+          <Order>1</Order>
+          <Path>reg add HKLM\SYSTEM\Setup\LabConfig /v BypassTPMCheck /t REG_DWORD /d 1 /f</Path>
+        </RunSynchronousCommand>
+        <RunSynchronousCommand wcm:action="add">
+          <Order>2</Order>
+          <Path>reg add HKLM\SYSTEM\Setup\LabConfig /v BypassSecureBootCheck /t REG_DWORD /d 1 /f</Path>
+        </RunSynchronousCommand>
+        <RunSynchronousCommand wcm:action="add">
+          <Order>3</Order>
+          <Path>reg add HKLM\SYSTEM\Setup\LabConfig /v BypassRAMCheck /t REG_DWORD /d 1 /f</Path>
+        </RunSynchronousCommand>
+        <RunSynchronousCommand wcm:action="add">
+          <Order>4</Order>
+          <Path>reg add HKLM\SYSTEM\Setup\LabConfig /v BypassCPUCheck /t REG_DWORD /d 1 /f</Path>
+        </RunSynchronousCommand>
+        <RunSynchronousCommand wcm:action="add">
+          <Order>5</Order>
+          <Path>reg add HKLM\SYSTEM\Setup\LabConfig /v BypassStorageCheck /t REG_DWORD /d 1 /f</Path>
+        </RunSynchronousCommand>
+      </RunSynchronous>
+
+      <!-- Clave: GVLK pública de Microsoft para Windows IoT Enterprise LTSC 2024.
+           WillShowUI=Never => la página "Product key" NO se muestra nunca. -->
+      <UserData>
+        <AcceptEula>true</AcceptEula>
+        <FullName>Olmost</FullName>
+        <Organization>Rig Manager VM</Organization>
+      @BLOQUE_CLAVE@
+      </UserData>
+    </component>
+  </settings>
+
+  <!-- =================== specialize =================== -->
+  <settings pass="specialize">
+    <component name="Microsoft-Windows-International-Core"
+               processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35"
+               language="neutral" versionScope="nonSxS"
+               xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+      <InputLocale>0409:00000409</InputLocale>
+      <SystemLocale>en-US</SystemLocale>
+      <UILanguage>en-US</UILanguage>
+      <UserLocale>en-US</UserLocale>
+    </component>
+    <component name="Microsoft-Windows-Shell-Setup"
+               processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35"
+               language="neutral" versionScope="nonSxS"
+               xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+      <ComputerName>@NOMBRE_EQUIPO@</ComputerName>
+    </component>
+  </settings>
+
+  <!-- =================== oobeSystem =================== -->
+  <settings pass="oobeSystem">
+    <component name="Microsoft-Windows-International-Core"
+               processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35"
+               language="neutral" versionScope="nonSxS"
+               xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+      <InputLocale>0409:00000409</InputLocale>
+      <SystemLocale>en-US</SystemLocale>
+      <UILanguage>en-US</UILanguage>
+      <UserLocale>en-US</UserLocale>
+    </component>
+
+    <component name="Microsoft-Windows-Shell-Setup"
+               processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35"
+               language="neutral" versionScope="nonSxS"
+               xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+
+      <!-- Inicio de sesión automático. La cuenta NO tiene contraseña, así que no
+           hay ningún elemento Password en este fichero. -->
+      <AutoLogon>
+        <Password>
+          <Value>@CUENTA_CLAVE@</Value>
+          <PlainText>true</PlainText>
+        </Password>
+        <Enabled>true</Enabled>
+        <Username>@CUENTA_USUARIO@</Username>
+      </AutoLogon>
+
+      <!-- Primer inicio de sesión: busca el medio del proyecto (CD del payload) en
+           cualquier unidad y lanza el instalador. -->
+      <FirstLogonCommands>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>cmd /c for %d in (D E F G H I J K) do @if exist %d:\payload\instalar.cmd call %d:\payload\instalar.cmd</CommandLine>
+          <Description>Instalar drivers virtio + agente de invitado + Rig Manager</Description>
+          <Order>1</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+        </SynchronousCommand>
+      </FirstLogonCommands>
+
+      <OOBE>
+        <HideEULAPage>true</HideEULAPage>
+        <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
+        <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+        <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+        <NetworkLocation>Work</NetworkLocation>
+        <ProtectYourPC>3</ProtectYourPC>
+      </OOBE>
+
+      <TimeZone>Romance Standard Time</TimeZone>
+
+      <UserAccounts>
+        <LocalAccounts>
+          <LocalAccount wcm:action="add">
+            <Password>
+              <Value>@CUENTA_CLAVE@</Value>
+              <PlainText>true</PlainText>
+            </Password>
+            <Description>Cuenta local de la VM (Rig Manager)</Description>
+            <DisplayName>Kemper</DisplayName>
+            <Group>Administrators</Group>
+            <Name>@CUENTA_USUARIO@</Name>
+          </LocalAccount>
+        </LocalAccounts>
+      </UserAccounts>
+    </component>
+  </settings>
+</unattend>

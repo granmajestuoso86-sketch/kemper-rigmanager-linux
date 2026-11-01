@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PLANTILLA del dominio. NO se usa tal cual: 20-crear-vm.sh sustituye los
+  marcadores @...@ y escribe config/<nombre-de-tu-vm>.xml, de modo que el
+  mismo proyecto vale en cualquier PC.
+
+  Dominio libvirt para la VM de Rig Manager — VM Windows 11 IoT Enterprise LTSC 2024
+  para ejecutar Rig Manager con el Kemper Profiler pasado por USB.
+
+  Decisiones de diseño (y por qué):
+
+  * UEFI (OVMF 4M) + TPM 2.0 emulado (swtpm): requisitos reales de Windows 11,
+    no un parche. El bypass del autounattend es sólo un seguro para la
+    comprobación de "arranque seguro capaz".
+
+  * Disco SATA (sda) + red e1000e + vídeo stdvga = drivers DE SERIE de Windows.
+    Cero dependencias de terceros para que el sistema arranque. El único
+    dispositivo virtio es el puerto serie virtual que necesita el agente de
+    invitado (su driver, vioser, lo instala virtio-win-gt-x64.msi después).
+
+  * El Kemper NO va aquí: se conecta en caliente con `virsh attach-device`
+    (ver config/hostdev-kemper.xml). Si estuviera fijo en este XML y el aparato
+    no estuviera enchufado, el dominio NO arrancaría.
+
+  * Dos lectores ópticos: sdb = medio de instalación desatendida (nuestro ISO
+    con autounattend.xml), sdc = ISO oficial de Windows. Orden de arranque:
+    primero Windows, luego el nuestro.
+    -> TRAS LA INSTALACIÓN hay que expulsar el ISO de Windows para que arranque
+       del disco (scripts/50-expulsar-isos.sh).
+
+  * on_reboot = restart (la instalación desatendida reinicia varias veces).
+  * reloj en hora local (lo que espera Windows).
+-->
+<domain type='kvm'>
+  <name>@VM_NOMBRE@</name>
+  <title>Rig Manager de Kemper — Windows 11 IoT Enterprise LTSC</title>
+  <description>VM para Rig Manager 4.3.13 con el Kemper Profiler por USB (passthrough en caliente).</description>
+  <memory unit='MiB'>@RAM_MB@</memory>
+  <currentMemory unit='MiB'>@RAM_MB@</currentMemory>
+  <vcpu placement='static'>@VCPUS@</vcpu>
+
+  <os firmware='efi'>
+    <type arch='x86_64' machine='q35'>hvm</type>
+    <!-- UEFI SIN ruta fija: con firmware='efi' libvirt elige el firmware de la
+         distribucion y gestiona la NVRAM por su cuenta. Antes había rutas a
+         /usr/share/OVMF/... incrustadas, que cambian de distro en distro y
+         rompen el compartir. -->
+    <bootmenu enable='no'/>
+  </os>
+
+  <features>
+    <acpi/>
+    <apic/>
+    <hyperv mode='custom'>
+      <relaxed state='on'/>
+      <vapic state='on'/>
+      <spinlocks state='on' retries='8191'/>
+      <vpindex state='on'/>
+      <runtime state='on'/>
+      <synic state='on'/>
+      <stimer state='on'/>
+    </hyperv>
+  </features>
+
+  <cpu mode='host-passthrough' check='none'>
+    <topology sockets='1' dies='1' cores='@VCPUS@' threads='1'/>
+  </cpu>
+
+  <clock offset='localtime'>
+    <timer name='rtc' tickpolicy='catchup'/>
+    <timer name='pit' tickpolicy='delay'/>
+    <timer name='hpet' present='no'/>
+    <timer name='hypervclock' present='yes'/>
+  </clock>
+
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+
+  <pm>
+    <suspend-to-mem enabled='no'/>
+    <suspend-to-disk enabled='no'/>
+  </pm>
+
+  <devices>
+    <!-- Disco del sistema: 80 GB, qcow2 disperso (crece según se usa) -->
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2' discard='unmap'/>
+      <source file='@VM_DIR@/@VOL@'/>
+      <target dev='sda' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+
+    <!-- sdb: medio de instalación desatendida (autounattend.xml + payload) -->
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='@PROYECTO@/install/kemper-install.iso'/>
+      <target dev='sdb' bus='sata'/>
+      <readonly/>
+      <boot order='2'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+
+    <!-- sdc: ISO oficial de Windows 11 IoT Enterprise LTSC 2024 -->
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='@ISO_WINDOWS@'/>
+      <target dev='sdc' bus='sata'/>
+      <readonly/>
+      <boot order='1'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='2'/>
+    </disk>
+
+    <!-- Red NAT: Rig Manager necesita internet (Rig Exchange, actualizaciones
+         del OS del Kemper). e1000e = driver de serie en Windows. -->
+    <interface type='network'>
+      <source network='default'/>
+      <model type='e1000e'/>
+    </interface>
+
+    <!-- Consola gráfica local (SPICE) -->
+    <controller type='usb' index='0' model='qemu-xhci' ports='8'/>
+    <controller type='sata' index='0'/>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <controller type='virtio-serial' index='0'/>
+
+    <!-- Agente de invitado: es la herramienta con la que el anfitrión
+         verifica el interior de Windows (inventario, estado, logs). -->
+    <channel type='unix'>
+      <target type='virtio' name='org.qemu.guest_agent.0'/>
+      <address type='virtio-serial' controller='0' bus='0' port='1'/>
+    </channel>
+
+    <input type='tablet' bus='usb'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+
+    <graphics type='spice' autoport='yes' listen='127.0.0.1'>
+      <listen type='address' address='127.0.0.1'/>
+    </graphics>
+
+    <video>
+      <model type='vga' vram='65536' heads='1' primary='yes'/>
+    </video>
+
+    <memballoon model='none'/>
+
+    <tpm model='tpm-crb'>
+      <backend type='emulator' version='2.0'/>
+    </tpm>
+  </devices>
+</domain>

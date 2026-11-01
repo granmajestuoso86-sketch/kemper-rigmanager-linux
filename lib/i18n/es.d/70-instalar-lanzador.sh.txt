@@ -1,0 +1,17 @@
+# Textos de scripts/70-instalar-lanzador.sh
+ENLACE_CREADO=enlace creado: %s
+ICONO_OFICIAL=icono oficial instalado en 8 tamaños (16..256)
+ICONO_PROPIO_SVG=icono propio instalado (SVG)
+AVISO_SIN_ICONO=AVISO: no encuentro el icono en el proyecto; el lanzador funcionará igual, solo se verá el icono genérico del sistema.
+ENTRADA_MENU=entrada de menú: %s
+VIRTVIEWER_CONFIRMACION=   virt-viewer: confirmacion al cerrar desactivada (ask-quit=false)
+COMPROBACIONES=Comprobaciones:
+ETIQUETA_LANZADOR=lanzador:
+ETIQUETA_ICONO=icono:
+ETIQUETA_MENU=menú:
+TEXTO_EJECUTABLE=ejecutable
+TEXTO_ICONO_OFICIAL8=oficial instalado (8 tamaños)
+TEXTO_PRESENTE=presente
+TEXTO_REVISAR=REVISAR
+MENU_CERRAR_SESION=Si 'Rig Manager (Kemper)' aún no aparece en el menú, CIERRA SESIÓN y entra de nuevo (hace falta para aplicar el grupo 'libvirt' y refrescar el menú).
+PRUEBA_RAPIDA=Prueba rápida sin cerrar sesión:  %s/kemper-rig-manager --estado

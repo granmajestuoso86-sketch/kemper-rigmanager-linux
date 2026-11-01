@@ -1,0 +1,18 @@
+# Texts for scripts/40-conectar-kemper.sh
+DESCONECTANDO_KEMPER=== Disconnecting the Kemper from the VM ==
+KEMPER_ESTADO_ANFITRION_VM=   Kemper on the host: %s   |   in the VM: %s
+KEMPER_VUELTO_LINUX=   (if it goes back to 'en-linux', your native editor can use it again)
+PASO_1_KEMPER_ENCHUFADO=== 1/4  Is the Kemper plugged into the host? ==
+ERROR_NO_VEO_KEMPER=ERROR: I can't see the Kemper (%s:%s) on the host.
+ERROR_KEMPER_CABLE=  - Check the cable and that the device is switched on.
+ERROR_KEMPER_LSUSB=  - 'lsusb' should show: 133e:0003 Kemper Digital GmbH Profiler
+PASO_2_ESTADO_VM=== 2/4  VM status ==
+ERROR_VM_NO_ARRANCADA=ERROR: the VM '%s' is not running. Start it with scripts/30-instalar-windows.sh
+VM_EN_MARCHA=   running
+PASO_3_CONEXION_CALIENTE=== 3/4  Hot-plug connection ==
+KEMPER_YA_CONECTADO=   it was already connected
+PASO_4_VERIFICACION=== 4/4  Verification (both sides) ==
+KEMPER_VISTO_ANFITRION=   Kemper seen from the HOST (Linux): %s
+KEMPER_XML_VM=   Kemper declared in the VM XML          : %s
+TRASPASO_CORRECTO=   >>> TRANSFER CORRECT: the device is inside the VM.
+TRASPASO_REVISAR=   >>> REVISAR: the transfer is not complete. Save this output.

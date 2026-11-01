@@ -1,0 +1,46 @@
+# Textos de scripts/00-setup-root.sh (español)
+# Formato: CLAVE=Texto    (% -> %%   salto de línea -> \n)
+
+SETUP_ERR_SIN_USUARIO=ERROR: no puedo saber qué usuario debe entrar en el grupo 'libvirt'.
+SETUP_ERR_SIN_USUARIO_SUDO=       Ejecútalo con sudo desde TU sesión (no como root directo):
+SETUP_ERR_SIN_USUARIO_ORDEN=           sudo bash scripts/00-setup-root.sh
+SETUP_ERR_ROOT=ERROR: este script necesita root. Ejecútalo con:  sudo bash "%s"
+SETUP_ERR_USUARIO=ERROR: el usuario '%s' no existe.
+SETUP_RAYA===============================================================
+SETUP_TITULO= Rig Manager VM — preparación de la plataforma (root)
+SETUP_CAB_DATOS= usuario: %s    proyecto: %s
+SETUP_P1=== 1/5  Paquetes ==
+SETUP_NUCLEO=-- núcleo: %s
+SETUP_OPC=-- opcionales (si alguno no existe en este Ubuntu, se avisa y se sigue):
+SETUP_OK_PAQ=   OK        %s
+SETUP_AVISO_PAQ=   AVISO     %s  (no disponible o falló; no es bloqueante)
+SETUP_P2=== 2/5  Grupos del usuario ==
+SETUP_GRUPOS_ANTES=   antes:  %s
+SETUP_GRUPOS_AHORA=   ahora:  %s
+SETUP_P3=== 3/5  Demonio libvirt y red NAT ==
+SETUP_LIBVIRTD_ACTIVO=   libvirtd.service: ACTIVO
+SETUP_LIBVIRTD_REVISAR=   libvirtd.service: revisar (puede ir por socket)
+SETUP_REDES=-- redes libvirt conocidas:
+SETUP_AVISO_VIRSH=   AVISO: libvirtd aún no responde a virsh
+SETUP_RED_ESTADO=-- estado red 'default':
+SETUP_AVISO_RED=   AVISO: no existe la red 'default' (libvirt la crea al instalar). Revisar.
+SETUP_P4=== 4/5  Disco de la VM y permisos de lectura para QEMU ==
+SETUP_DISCOS=   discos de la VM: %s
+SETUP_ACL=   ACL de lectura concedidas a %s sobre los medios del proyecto
+SETUP_AVISO_QEMUUSER=   AVISO: no existe el usuario %s; ¿está libvirt instalado?
+SETUP_P5=== 5/5  Verificación ==
+SETUP_KVM=--- KVM:
+SETUP_KVM_OK=   /dev/kvm: accesible
+SETUP_KVM_NO=   /dev/kvm: NO accesible
+SETUP_VERSIONES=--- versiones:
+SETUP_UEFI=--- UEFI (OVMF):
+SETUP_AVISO_OVMF=   AVISO: no encuentro OVMF_CODE*.fd
+SETUP_GUI=--- herramientas GUI:
+SETUP_HERRAMIENTA=   %-14s %s\n
+SETUP_NO_HERRAMIENTA=NO
+SETUP_RED_DEFAULT=--- red default:
+SETUP_FIN1= FIN. Pega esta salida completa en el chat.
+SETUP_FIN2= Nota: tu sesión gráfica ya abierta NO tiene el grupo 'libvirt'
+SETUP_FIN3= todavía (hace falta cerrar sesión y entrar de nuevo para el menú).
+SETUP_FIN4= Para que yo pueda seguir trabajando sin que cierres sesión, no pasa
+SETUP_FIN5= nada: libvirt se puede manejar hoy mismo.

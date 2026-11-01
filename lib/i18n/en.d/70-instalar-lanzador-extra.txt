@@ -1,0 +1,8 @@
+# Icono propio: se generan también los tamaños PNG (petición del usuario).
+ICONO_PROPIO_PNG=   our own icon installed in 8 sizes (32x32 ... 256x256) + vector
+
+# Claves que los scripts usaban y no tenían texto (cazadas al comprobar
+# TODAS las claves usadas, no sólo las definidas).
+MENU_OK=   menu entry created: %s
+MENU_AVISO=   WARNING: I couldn't write the menu entry; the launcher still works from the terminal
+MENU_SIN_PLANTILLA=   WARNING: the menu template is missing (%s); the launcher still works from the terminal

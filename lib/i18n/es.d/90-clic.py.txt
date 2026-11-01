@@ -1,0 +1,5 @@
+# Textos de scripts/90-clic.py
+USO_CLIC=90-clic.py — ratón inyectado en la máquina virtual, por coordenadas.\n\nPor qué existe: `virsh` sólo sabe mandar TECLAS. Para pulsar botones hace falta\nel ratón. La VM tiene un dispositivo de puntero ABSOLUTO (tablet USB), así que se\npuede clicar en coordenadas exactas sin saber dónde estaba el puntero.\n\nDOS TRAMPAS APRENDIDAS AQUÍ (costaron dos diagnósticos):\n 1. Si se envían mover+apretar+soltar en el MISMO lote de eventos, el invitado\n    ve el movimiento pero NO la pulsación: el botón queda apretado y soltado en\n    el mismo instante y el sondeo del HID no llega a verlo. Hay que separar la\n    orden en tres: mover, apretar (esperar ~150 ms), soltar.\n 2. Un diálogo modal bloquea los clics a la ventana de debajo. Si algo no\n    responde a un clic, lo primero es mirar si hay un diálogo encima.\n\nUso:\n    scripts/90-clic.py 640 400            # clic izquierdo en (640, 400)\n    scripts/90-clic.py 640 400 --derecho\n    scripts/90-clic.py 640 400 --doble
+AVISO_QEMU=  aviso de QEMU: %s
+CLIC=  clic %s en (%s,%s)
+CLIC_DOBLE=  clic doble %s en (%s,%s)

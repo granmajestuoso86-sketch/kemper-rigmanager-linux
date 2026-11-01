@@ -1,0 +1,28 @@
+# Texts for scripts/10-build-install-iso.sh (English)
+# Format: KEY=Text    (% -> %%   newline -> \n)
+
+BUILD_ERR_XORRISO=ERROR: xorriso is missing (scripts/00-setup-root.sh installs it)
+BUILD_ERR_AU=ERROR: install/autounattend.xml.in is missing
+BUILD_ERR_PAYLOAD=ERROR: install/payload/ is missing
+BUILD_P1=== 1/3  Answer file, with YOUR data ==
+BUILD_CLAVE_ETIQUETA=   product key:
+BUILD_CLAVE_INCLUIDA=included
+BUILD_CLAVE_SIN=NONE (Windows left unactivated)
+BUILD_AU_OK=   answer file generated: %s
+BUILD_P2=== 2/3  Filling payload/ with THE MEDIA YOU SUPPLY ==
+BUILD_RM=   Rig Manager: %s
+BUILD_YA_ESTABA=   already there: %s
+BUILD_EXTRAIDO=   extracted from the virtio-win ISO: %s
+BUILD_AVISO_EXTRAER=   WARNING: I couldn't extract %s from %s
+BUILD_AVISO_FALTA_M=   WARNING: %s is missing and there's no VIRTIO_ISO in the config
+BUILD_ERR_INCOMPLETO=ERROR: I won't build the media because it's missing:
+BUILD_ERR_FALTA_ITEM=   - %s
+BUILD_ERR_MSI=   The Rig Manager MSI comes from:  %s
+BUILD_ERR_VIRTIO1=   The virtio ones come from the virtio-win ISO (VIRTIO_ISO in your config), and
+BUILD_ERR_VIRTIO2=   extracting them needs 7z:   sudo apt install p7zip-full
+BUILD_PAYLOAD_OK=   payload complete: Rig Manager + drivers + guest agent OK
+BUILD_ISO=ISO built: %s
+BUILD_CONTENIDO=--- contents (autounattend.xml must be at the ROOT):
+BUILD_ETIQUETA=--- volume label:
+BUILD_AVISO_7Z1=--- WARNING: there's no 7z, so I can't list the media contents.
+BUILD_AVISO_7Z2=    Install it (package p7zip-full) to be able to verify it.

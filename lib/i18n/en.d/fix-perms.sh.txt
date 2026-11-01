@@ -1,0 +1,7 @@
+# Texts for scripts/fix-perms.sh
+ERROR_SUDO=ERROR: run it with sudo from your session: sudo bash scripts/fix-perms.sh
+ERROR_ROOT=Needs root: sudo bash "%s"
+ERROR_NO_QEMU_USER=%s does not exist: is libvirt installed?
+PERMISOS_REPARADOS=Permissions repaired. Current ACLs for the project:
+ESTADO_DISCOS_VM=VM disk status (%s):
+DISCOS_VACIOS=  (still empty; the VM has not been created yet)

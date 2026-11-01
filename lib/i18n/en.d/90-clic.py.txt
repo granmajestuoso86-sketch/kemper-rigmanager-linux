@@ -1,0 +1,5 @@
+# Texts for scripts/90-clic.py
+USO_CLIC=90-clic.py — mouse injected into the virtual machine, by coordinates.\n\nWhy it exists: `virsh` only knows how to send KEYS. To press buttons you need the\nmouse. The VM has an ABSOLUTE pointer device (USB tablet), so you can click at\nexact coordinates without knowing where the pointer was.\n\nTWO PITFALLS LEARNED HERE (they cost two diagnoses):\n 1. If move+press+release are sent in the SAME batch of events, the guest sees\n    the movement but NOT the press: the button is pressed and released at the\n    same instant and the HID polling never sees it. You must split the order\n    into three: move, press (wait ~150 ms), release.\n 2. A modal dialog blocks clicks to the window underneath. If something does\n    not respond to a click, first check whether there is a dialog on top.\n\nUsage:\n    scripts/90-clic.py 640 400            # left click at (640, 400)\n    scripts/90-clic.py 640 400 --derecho\n    scripts/90-clic.py 640 400 --doble
+AVISO_QEMU=  QEMU warning: %s
+CLIC=  click %s at (%s,%s)
+CLIC_DOBLE=  double click %s at (%s,%s)

@@ -1,0 +1,9 @@
+# Texts for scripts/50-expulsar-isos.sh
+ERROR_DOMINIO_NO_DEFINIDO=ERROR: domain '%s' not defined
+EXPULSANDO_MEDIOS=== Ejecting optical media (sdb = unattended install, sdc = Windows) ==
+EXPULSAR_DEV=   %s: 
+EXPULSADO=ejected
+AVISO_NO_EXPULSADO=WARNING: could not eject (was it already empty, or is the VM off?)
+ESTADO_DISCOS_XML=== Disk status in the XML ==
+SIGUIENTE_LANZADOR=Next: start/connect with the launcher  scripts/kemper-rig-manager
+EXPULSAR_REINSERTAR=(If you ever need the installation media again —for example for a repair— it can be re-inserted with:

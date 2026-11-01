@@ -1,0 +1,6 @@
+# El ISO de virtio descargado por la fase 2 (fallo real, 1-nov-2026).
+BUILD_VIRTIO_DESCARGADO=   usando el ISO de virtio-win que descargó la fase 2: %s
+
+# Pista que faltaba en el error del payload incompleto (fallo real, 1-nov-2026).
+BUILD_FALTA_PISTA_VIRTIO=   Si no tienes el ISO de virtio-win, pulsa Enter en esa pregunta al configurar: se descarga solo.
+   El instalador busca el ISO en VIRTIO_ISO (config) o en install/virtio-win.iso.

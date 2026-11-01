@@ -1,0 +1,8 @@
+# Icono propio: se generan también los tamaños PNG (petición del usuario).
+ICONO_PROPIO_PNG=   icono propio instalado en 8 tamaños (32x32 ... 256x256) + vectorial
+
+# Claves que los scripts usaban y no tenían texto (cazadas al comprobar
+# TODAS las claves usadas, no sólo las definidas).
+MENU_OK=   entrada de menú creada: %s
+MENU_AVISO=   AVISO: no he podido escribir la entrada del menú; el lanzador sigue funcionando desde la terminal
+MENU_SIN_PLANTILLA=   AVISO: falta la plantilla del menú (%s); el lanzador sigue funcionando desde la terminal

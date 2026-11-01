@@ -1,0 +1,18 @@
+# Textos de scripts/40-conectar-kemper.sh
+DESCONECTANDO_KEMPER=== Desconectando el Kemper de la VM ==
+KEMPER_ESTADO_ANFITRION_VM=   Kemper en el anfitrión: %s   |   en la VM: %s
+KEMPER_VUELTO_LINUX=   (si vuelve a 'en-linux', tu editor nativo ya puede usarlo otra vez)
+PASO_1_KEMPER_ENCHUFADO=== 1/4  ¿Está el Kemper enchufado al anfitrión? ==
+ERROR_NO_VEO_KEMPER=ERROR: no veo el Kemper (%s:%s) en el anfitrión.
+ERROR_KEMPER_CABLE=  - Comprueba el cable y que el aparato esté encendido.
+ERROR_KEMPER_LSUSB=  - 'lsusb' debe mostrar: 133e:0003 Kemper Digital GmbH Profiler
+PASO_2_ESTADO_VM=== 2/4  Estado de la VM ==
+ERROR_VM_NO_ARRANCADA=ERROR: la VM '%s' no está en marcha. Arráncala con scripts/30-instalar-windows.sh
+VM_EN_MARCHA=   en marcha
+PASO_3_CONEXION_CALIENTE=== 3/4  Conexión en caliente ==
+KEMPER_YA_CONECTADO=   ya estaba conectado
+PASO_4_VERIFICACION=== 4/4  Verificación (las dos caras) ==
+KEMPER_VISTO_ANFITRION=   Kemper visto desde el ANFITRIÓN (Linux): %s
+KEMPER_XML_VM=   Kemper declarado en el XML de la VM    : %s
+TRASPASO_CORRECTO=   >>> TRASPASO CORRECTO: el aparato está dentro de la VM.
+TRASPASO_REVISAR=   >>> REVISAR: el traspaso no está completo. Guarda esta salida.
