@@ -26,6 +26,10 @@ starts Windows, connects the Kemper and opens the window with Rig Manager. When
 you close it, Windows shuts down and **the Kemper goes back to Linux on its
 own**, where your DAW sees it again as always.
 
+![Kemper's Rig Manager running in a Windows virtual machine, inside Linux](docs/screenshot-rig-manager-vm.png)
+
+*The official Rig Manager with the Profiler connected, in a Windows window inside Linux. On the left, the Linux desktop.*
+
 ---
 
 ## Important notice (read it, it's 20 seconds)
