@@ -25,7 +25,7 @@ Windows, conecta el Kemper y te abre la ventana con Rig Manager. Al cerrarla,
 Windows se apaga y **el Kemper vuelve solo a Linux**, donde tu DAW lo vuelve a
 ver como siempre.
 
-![Rig Manager de Kemper funcionando en una máquina virtual con Windows, dentro de Linux](docs/screenshot-rig-manager-vm.png)
+![Rig Manager de Kemper funcionando en una máquina virtual con Windows, dentro de Linux](docs/rig-manager-vm.png)
 
 *El Rig Manager oficial con el Profiler conectado, en una ventana de Windows dentro de Linux. A la izquierda, el escritorio de Linux.*
 
