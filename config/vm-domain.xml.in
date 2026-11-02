@@ -139,8 +139,17 @@
       <listen type='address' address='127.0.0.1'/>
     </graphics>
 
+    <!-- Pantalla QXL, NO 'vga'.
+         Con 'vga' (el modelo basico) Windows se queda con el "Microsoft Basic
+         Display Adapter", que es el adaptador generico de emergencia: NO admite
+         cambiar de resolucion (devuelve error) y no tiene aceleracion. Ademas hay
+         que emparejarlo con el servidor grafico de aqui arriba (spice): qxl esta
+         hecho para ese trabajo y su driver (qxldod) viene en el paquete virtio-win
+         que ya se instala dentro de Windows.
+         Fallo real, encontrado al probar a fijar la resolucion: la pantalla de la
+         VM era 'vga' y ningun cambio de resolucion funcionaba. -->
     <video>
-      <model type='vga' vram='65536' heads='1' primary='yes'/>
+      <model type='qxl' ram='65536' vram='65536' heads='1' primary='yes'/>
     </video>
 
     <memballoon model='none'/>

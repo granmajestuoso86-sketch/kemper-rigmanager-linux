@@ -72,15 +72,29 @@ namespace KemperPantalla {
       return string.Join(" ", lista.ToArray());
     }
     public static int TamanoEstructura() { return Marshal.SizeOf(typeof(DEVMODE1)); }
+    // Aplica un MODO DE LA PROPIA LISTA de la pantalla, entero (con su profundidad
+    // de color y su frecuencia), en vez de retocar el modo actual cambiandole el
+    // ancho y el alto: eso ultimo falla cuando esa combinacion no existe en la
+    // lista. Es lo que pasaba aqui: pedia 1920x1080 sobre el modo actual y Windows
+    // contestaba "no lo admite", aunque 1920x1080 si este entre los disponibles.
     public static string Pon(int w, int h) {
-      DEVMODE1 dm = Actual();
-      dm.dmPelsWidth  = w;
-      dm.dmPelsHeight = h;
-      int prueba = ChangeDisplaySettings(ref dm, CDS_TEST);
-      if (prueba != 0) return "NO_ADMITE (" + prueba + ")";
-      int r = ChangeDisplaySettings(ref dm, CDS_UPDATEREGISTRY);
+      DEVMODE1 elegido = Nuevo(); bool hay = false;
+      for (int intento = 0; intento < 2 && !hay; intento++) {
+        for (int i = 0; i < 500; i++) {
+          DEVMODE1 dm = Nuevo();
+          if (EnumDisplaySettings(null, i, ref dm) == 0) break;
+          if (dm.dmPelsWidth != w || dm.dmPelsHeight != h) continue;
+          if (intento == 0 && dm.dmBitsPerPel < 32) continue;   // 1a vuelta: el mejor color
+          elegido = dm; hay = true; break;
+        }
+      }
+      if (!hay) return "NO_ESTA";
+      // NO se usa la comprobacion previa (CDS_TEST): en varias tarjetas graficas
+      // contesta "fallo" para modos que despues si funcionan. Se aplica y se
+      // comprueba LEYENDO la resolucion real, que es la unica prueba que vale.
+      int r = ChangeDisplaySettings(ref elegido, CDS_UPDATEREGISTRY);
       DEVMODE1 ahora = Actual();
-      return "codigo " + r + ", pantalla ahora en " + ahora.dmPelsWidth + "x" + ahora.dmPelsHeight;
+      return "codigo " + r + ", profundidad " + elegido.dmBitsPerPel + ", pantalla ahora en " + ahora.dmPelsWidth + "x" + ahora.dmPelsHeight;
     }
   }
 }

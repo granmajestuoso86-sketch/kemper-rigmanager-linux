@@ -238,6 +238,21 @@ está pidiendo.)
 Mira si está **encendido**: un Kemper apagado no existe para el ordenador (ni aparece
 en `lsusb`, ni como tarjeta de sonido). Enciéndelo: el vigilante lo conecta solo.
 
+### Windows se ve a 1024x768 (o muy pequeño) y no puedo cambiar la resolución
+
+Pasa en máquinas creadas antes de una corrección del proyecto: la pantalla de la
+máquina virtual se quedó en el modelo básico, que **no admite cambios de
+resolución**. Se arregla en un minuto, con la máquina apagada:
+
+```bash
+kemper-rig-manager --apagar          # apaga Windows y devuelve el Kemper a Linux
+virt-xml kemper-win11 --edit --video model.type=qxl,ram=65536,heads=1
+```
+
+Al volver a abrir el lanzador, Windows detectará una pantalla nueva e instalará su
+driver (ya viene dentro). A partir de ahí, el tamaño pedido en `RESOLUCION_VM` sí se
+aplica.
+
 ### Rig Manager se queda en «Scanning for profilers…»
 
 El Kemper está encendido pero **no ha llegado a Windows**. Comprueba y arréglalo así:

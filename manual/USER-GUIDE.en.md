@@ -244,6 +244,21 @@ Check whether it's **turned on**: a Kemper that's off doesn't exist for the
 computer (it doesn't show up in `lsusb`, nor as a sound card). Turn it on: the
 watcher connects it by itself.
 
+### Windows looks 1024x768 (or tiny) and I can't change the resolution
+
+This happens on machines created before a fix in the project: the virtual machine's
+display was left at the basic model, which **doesn't accept resolution changes**. It
+takes a minute to fix, with the machine shut down:
+
+```bash
+kemper-rig-manager --apagar          # shuts Windows down and gives the Kemper back
+virt-xml kemper-win11 --edit --video model.type=qxl,ram=65536,heads=1
+```
+
+Next time you open the launcher, Windows will notice a new display and install its
+driver (it's already inside). From then on, the size asked for in `RESOLUCION_VM`
+does get applied.
+
 ### Rig Manager stays on "Scanning for profilers…"
 
 The Kemper is on but **hasn't reached Windows**. Check and fix it like this:

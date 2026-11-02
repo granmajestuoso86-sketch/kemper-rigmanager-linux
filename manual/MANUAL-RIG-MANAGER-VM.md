@@ -478,6 +478,19 @@ otra cosa: lo hace el agente de pantalla de SPICE, que este proyecto **no** inst
   pregunta a la propia librería por cada clave que aparece en el código y busca el
   `[[CLAVE]]` que imprime cuando falta. Fallo real, visto al ejecutar la fase 7 en
   un entorno limpio.
+- **La pantalla de la VM: `qxl`, nunca `vga`.** Con `vga`, Windows se queda con el
+  «Microsoft Basic Display Adapter» (el adaptador genérico de emergencia): no admite
+  **ningún** cambio de resolución —`ChangeDisplaySettings` devuelve error aunque el
+  tamaño aparezca en la lista de la pantalla— y no tiene aceleración gráfica. El
+  síntoma exacto: `RESOLUCION_VM` no hace nada, se aplique como se aplique (probado
+  incluso lanzándolo dentro de la sesión del usuario con una tarea interactiva).
+  La solución es emparejar la pantalla `qxl` con el servidor SPICE que ya usa la VM;
+  su driver (`qxldod`) viene en el paquete virtio-win que el instalador mete en
+  Windows. **En una VM ya creada se cambia con la máquina apagada**:
+  `virt-xml <nombre-de-la-vm> --edit --video model.type=qxl,ram=65536,heads=1`
+  y al arrancar, Windows detecta el dispositivo nuevo y pone el driver del paquete
+  ya instalado (si no, «buscar cambios de hardware» en el Administrador de
+  dispositivos).
 - **Al primer arranque de Windows, Rig Manager no funciona bien hasta reiniciar.**
   Windows acaba de instalar los drivers de virtio y el agente de invitado, y parte
   de ellos sólo entran en servicio tras un reinicio: el primer lanzamiento puede
