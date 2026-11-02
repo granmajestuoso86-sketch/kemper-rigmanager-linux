@@ -18,10 +18,19 @@
 # =============================================================================
 param([int]$Ancho, [int]$Alto)
 
-$log = 'C:\log-resolucion.txt'
+# Apunta en el fichero de registro y tambien por pantalla. NUNCA puede fallar:
+# - Escribir en C:\ requiere permisos de administrador, asi que el registro va a
+#   la carpeta del usuario o a la temporal de Windows, lo primero que se deje.
+# - Si no se puede escribir en ninguno, el script sigue: la salida por pantalla
+#   (que el instalador recoge) es el registro que de verdad importa.
+# Fallo real: el registro se creaba en C:\ desde el servicio y luego el usuario no
+# podia escribir en el, asi que parecia que el script no se ejecutaba.
 function Apunta($t) {
-  "$((Get-Date).ToString('HH:mm:ss'))  $t" | Add-Content -Path $log -Encoding UTF8
   Write-Host "  $t"
+  $linea = "$((Get-Date).ToString('HH:mm:ss'))  $t"
+  foreach ($ruta in @("$env:USERPROFILE\log-resolucion.txt", "C:\Windows\Temp\log-resolucion.txt")) {
+    try { $linea | Add-Content -Path $ruta -Encoding UTF8 -ErrorAction Stop; break } catch { }
+  }
 }
 
 $pinvoke = @"
