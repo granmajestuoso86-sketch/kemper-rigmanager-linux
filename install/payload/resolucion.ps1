@@ -1,50 +1,129 @@
-# ============================================================================
+# =============================================================================
 #  resolucion.ps1 - fija la resolucion de pantalla de Windows.
-#  Se llama:  powershell -ExecutionPolicy Bypass -File resolucion.ps1 1920 1200
-#  y queda registrado para volver a aplicarse en el primer inicio de sesion,
-#  que es cuando el driver de video ya esta cargado de verdad.
-#  Si falla, se apunta en C:\log-resolucion.txt y Windows se queda como estaba:
-#  es un ajuste de comodidad, nunca debe romper nada.
-#  (Solo ASCII a proposito: se ejecuta en un Windows recien instalado.)
-# ============================================================================
+#
+#  Uso:  powershell -NoProfile -ExecutionPolicy Bypass -File resolucion.ps1 1920 1200
+#
+#  La parte delicada -- la estructura DEVMODE y las llamadas a Windows -- esta
+#  copiada del modulo "ChangeScreenResolution" de la PowerShell Gallery, que es
+#  codigo usado por muchisima gente. La version anterior de este script calculaba
+#  a mano en que byte iba cada campo, se equivocaba, y por eso no hacia nada: al
+#  pedir 1600x900 le escribia el ancho y el alto en campos que no eran.
+#  Leccion: no calcular a mano estructuras de Windows; usar una ya probada.
+#
+#  Ademas de pedir un tamano, mira QUE TAMANOS OFRECE de verdad la pantalla y
+#  elige el mas parecido: dentro de una maquina virtual no estan todos. Lo cuenta
+#  todo por pantalla y lo apunta en C:\log-resolucion.txt.
+#
+#  Solo ASCII a proposito: se ejecuta en un Windows recien instalado.
+# =============================================================================
 param([int]$Ancho, [int]$Alto)
 
 $log = 'C:\log-resolucion.txt'
-function Apunta($t) { "$((Get-Date).ToString('HH:mm:ss'))  $t" | Add-Content -Path $log -Encoding UTF8 }
+function Apunta($t) {
+  "$((Get-Date).ToString('HH:mm:ss'))  $t" | Add-Content -Path $log -Encoding UTF8
+  Write-Host "  $t"
+}
 
-Apunta "=== resolucion.ps1: peticion ${Ancho}x${Alto} ==="
-if ($Ancho -lt 640 -or $Alto -lt 480) { Apunta "valores fuera de rango: no hago nada"; exit 1 }
-
-# DEVMODEA ocupa 220 bytes. Solo se rellenan los campos que la llamada mira:
-#   offset  36: dmSize (WORD)        = 220
-#   offset  40: dmFields (DWORD)     = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT
-#   offset 112: dmBitsPerPel (DWORD) = 32
-#   offset 116: dmPelsWidth (DWORD)
-#   offset 120: dmPelsHeight (DWORD)
-# Se trabaja con un bloque de bytes en vez de declarar la estructura entera:
-# asi no hay forma de equivocarse con el relleno (padding) de los campos.
-$dm = New-Object byte[] 220
-[BitConverter]::GetBytes([uint16]220).CopyTo($dm, 36)
-[BitConverter]::GetBytes([uint32](0x00080000 -bor 0x00100000 -bor 0x00040000)).CopyTo($dm, 40)
-[BitConverter]::GetBytes([uint32]32).CopyTo($dm, 112)
-[BitConverter]::GetBytes([uint32]$Ancho).CopyTo($dm, 116)
-[BitConverter]::GetBytes([uint32]$Alto).CopyTo($dm, 120)
-
-try {
-  Add-Type -Namespace Kemper -Name Nativa -MemberDefinition @'
-[System.Runtime.InteropServices.DllImport("user32.dll", CharSet=System.Runtime.InteropServices.CharSet.Ansi)]
-public static extern int ChangeDisplaySettings(System.IntPtr lpDevMode, uint dwFlags);
-'@ -ErrorAction Stop
-  $ptr = [System.Runtime.InteropServices.Marshal]::AllocHGlobal(220)
-  try {
-    [System.Runtime.InteropServices.Marshal]::Copy($dm, 0, $ptr, 220)
-    $r = [Kemper.Nativa]::ChangeDisplaySettings($ptr, 0)
-  } finally { [System.Runtime.InteropServices.Marshal]::FreeHGlobal($ptr) }
-  switch ($r) {
-     0   { Apunta "aplicada: ${Ancho}x${Alto}" }
-     1   { Apunta "aplicada: ${Ancho}x${Alto} (pide reiniciar)" }
-    -1   { Apunta "NO se ha podido aplicar (el driver de video no la admite en este momento)" }
-    -2   { Apunta "ese tamano no lo admite el adaptador; se queda el actual" }
-    default { Apunta "resultado inesperado: $r" }
+$pinvoke = @"
+using System;
+using System.Runtime.InteropServices;
+namespace KemperPantalla {
+  [StructLayout(LayoutKind.Sequential)]
+  public struct DEVMODE1 {
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string dmDeviceName;
+    public short dmSpecVersion; public short dmDriverVersion; public short dmSize; public short dmDriverExtra;
+    public int dmFields;
+    public short dmOrientation; public short dmPaperSize; public short dmPaperLength; public short dmPaperWidth;
+    public short dmScale; public short dmCopies; public short dmDefaultSource; public short dmPrintQuality;
+    public short dmColor; public short dmDuplex; public short dmYResolution; public short dmTTOption; public short dmCollate;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string dmFormName;
+    public short dmLogPixels; public short dmBitsPerPel;
+    public int dmPelsWidth; public int dmPelsHeight; public int dmDisplayFlags; public int dmDisplayFrequency;
+    public int dmICMMethod; public int dmICMIntent; public int dmMediaType; public int dmDitherType;
+    public int dmReserved1; public int dmReserved2; public int dmPanningWidth; public int dmPanningHeight;
   }
-} catch { Apunta "ERROR: $($_.Exception.Message)" }
+  public class Pantalla {
+    [DllImport("user32.dll")] public static extern int EnumDisplaySettings(string deviceName, int modeNum, ref DEVMODE1 devMode);
+    [DllImport("user32.dll")] public static extern int ChangeDisplaySettings(ref DEVMODE1 devMode, int flags);
+    public const int ENUM_CURRENT_SETTINGS = -1;
+    public const int CDS_UPDATEREGISTRY = 0x01;
+    public const int CDS_TEST = 0x02;
+
+    private static DEVMODE1 Nuevo() {
+      DEVMODE1 dm = new DEVMODE1();
+      dm.dmDeviceName = new String(new char[32]);
+      dm.dmFormName   = new String(new char[32]);
+      dm.dmSize       = (short)Marshal.SizeOf(dm);
+      return dm;
+    }
+    public static DEVMODE1 Actual() {
+      DEVMODE1 dm = Nuevo();
+      EnumDisplaySettings(null, ENUM_CURRENT_SETTINGS, ref dm);
+      return dm;
+    }
+    public static string TamanosDisponibles() {
+      var lista = new System.Collections.Generic.List<string>();
+      for (int i = 0; i < 500; i++) {
+        DEVMODE1 dm = Nuevo();
+        if (EnumDisplaySettings(null, i, ref dm) == 0) break;
+        string s = dm.dmPelsWidth + "x" + dm.dmPelsHeight;
+        if (!lista.Contains(s)) lista.Add(s);
+      }
+      return string.Join(" ", lista.ToArray());
+    }
+    public static int TamanoEstructura() { return Marshal.SizeOf(typeof(DEVMODE1)); }
+    public static string Pon(int w, int h) {
+      DEVMODE1 dm = Actual();
+      dm.dmPelsWidth  = w;
+      dm.dmPelsHeight = h;
+      int prueba = ChangeDisplaySettings(ref dm, CDS_TEST);
+      if (prueba != 0) return "NO_ADMITE (" + prueba + ")";
+      int r = ChangeDisplaySettings(ref dm, CDS_UPDATEREGISTRY);
+      DEVMODE1 ahora = Actual();
+      return "codigo " + r + ", pantalla ahora en " + ahora.dmPelsWidth + "x" + ahora.dmPelsHeight;
+    }
+  }
+}
+"@
+try { Add-Type $pinvoke -ErrorAction Stop } catch { Apunta "ERROR al preparar las llamadas a Windows: $($_.Exception.Message)"; exit 1 }
+
+Apunta "peticion: ${Ancho}x${Alto}"
+$antes = [KemperPantalla.Pantalla]::Actual()
+Apunta "ahora mismo: $($antes.dmPelsWidth)x$($antes.dmPelsHeight)"
+Apunta "(la estructura que uso mide $([KemperPantalla.Pantalla]::TamanoEstructura()) bytes; tiene que ser 156)"
+
+$disp = [KemperPantalla.Pantalla]::TamanosDisponibles()
+if ([string]::IsNullOrWhiteSpace($disp)) { Apunta "ERROR: la pantalla no me dice ningun tamano"; exit 1 }
+Apunta "tamanos que ofrece esta pantalla: $disp"
+
+$pedido = "${Ancho}x${Alto}"
+$lista = $disp -split ' '
+$objetivo = $pedido
+if ($lista -notcontains $pedido) {
+  $area = $Ancho * $Alto
+  $mejor = ""; $mejorArea = -1
+  foreach ($t in $lista) {
+    $p = $t -split 'x'
+    if ($p.Count -ne 2) { continue }
+    $a = [int]$p[0] * [int]$p[1]
+    if ($a -le $area -and $a -gt $mejorArea) { $mejorArea = $a; $mejor = $t }
+  }
+  if ($mejor -eq "") {
+    # todos los tamanos disponibles son mayores: se coge el mas pequeno de todos
+    $minArea = -1
+    foreach ($t in $lista) {
+      $p = $t -split 'x'
+      if ($p.Count -ne 2) { continue }
+      $a = [int]$p[0] * [int]$p[1]
+      if ($minArea -eq -1 -or $a -lt $minArea) { $minArea = $a; $mejor = $t }
+    }
+  }
+  Apunta "el pedido ${pedido} no esta entre los que ofrece la pantalla; uso $mejor"
+  $objetivo = $mejor
+}
+
+$p2 = $objetivo -split 'x'
+Apunta "aplicando $objetivo ..."
+$res = [KemperPantalla.Pantalla]::Pon([int]$p2[0], [int]$p2[1])
+Apunta "resultado: $res"
+Apunta "=== fin ==="
