@@ -192,6 +192,8 @@ scripts/                       The phases, numbered in execution order
   └── 90-*.py, 95-*.py         Tools (verify, write, clicks, files)
 install/payload/               Scripts that run INSIDE Windows
 manual/                        Full deployment and usage manual
+docs/                          The front-page screenshot (and whatever comes later)
+icono/                         The project's own icon (Kemper's official one is not redistributed)
 ```
 
 ## How this was made (and why you should read it before trusting it)
